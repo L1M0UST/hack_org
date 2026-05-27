@@ -1,0 +1,16 @@
+{
+  "facts": [
+    {
+      "fact_type": "attack_type",
+      "fact_value": "分布式拒绝服务攻击（DDoS）",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_country",
+      "fact_value": "立陶宛",
+      "confidence": 0.9,
+      "current_best": true
+    }
+  ]
+}

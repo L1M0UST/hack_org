@@ -1,0 +1,16 @@
+{
+  "facts": [
+    {
+      "fact_type": "malware",
+      "fact_value": "GandCrab",
+      "confidence": 1.0,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_country",
+      "fact_value": "德国",
+      "confidence": 0.9,
+      "current_best": true
+    }
+  ]
+}

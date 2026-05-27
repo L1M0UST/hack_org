@@ -1,0 +1,10 @@
+{
+  "facts": [
+    {
+      "fact_type": "victim_org",
+      "fact_value": "ALPHV/BlackCat勒索软件组织的谈判代表",
+      "confidence": 0.9,
+      "current_best": true
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "sources": [
+    {
+      "source_title": "May 2026 Patch Tuesday: 30 Critical Vulnerabilities Among 130 CVEs",
+      "source_url": "https://www.crowdstrike.com/en-us/blog/patch-tuesday-analysis-may-2026/",
+      "source_domain": "www.crowdstrike.com",
+      "published_at": "2026-05-12T00:00:00-05:00",
+      "collected_at": "2026-05-13T09:54:26.604989+00:00",
+      "confidence": 0.54,
+      "reasons": [
+        "body repeated matches: Stop",
+        "high fuzzy match: 100",
+        "supporting entities found"
+      ]
+    }
+  ]
+}

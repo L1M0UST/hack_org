@@ -1,0 +1,14 @@
+{
+  "members": [
+    {
+      "member_name": "Anatoly Sergeevitsch Kravchuk",
+      "role": "成员",
+      "confidence": 0.9
+    },
+    {
+      "member_name": "Daniil Maksimovich Shchukin",
+      "role": "负责人",
+      "confidence": 0.9
+    }
+  ]
+}

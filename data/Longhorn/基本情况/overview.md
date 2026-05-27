@@ -1,0 +1,1 @@
+Longhorn（也称Lamberts）是一个被归因于美国的高级持续性威胁（APT）组织。该组织自2011年起活跃，长期针对全球范围内的政府、外交、技术、教育和电信领域的组织进行攻击。其攻击活动涉及复杂的定制后门工具链，包括BlackLambert、PurpleLambert、WhiteLambert、CopperLambert等，并利用多层加密和隐秘通信技术。该组织具有高度操作复杂性和隐蔽性。

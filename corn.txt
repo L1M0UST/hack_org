@@ -1,0 +1,142 @@
+你是资深威胁情报工程师和 Python 自动化工程师。
+我要你为我构建一个“APT/黑客组织公开情报采集与文件归档系统”。
+【输入】
+我有一个 CSV 文件，字段只有：
+
+* hacker_group_name
+* description
+  【目标】
+  针对 CSV 中的每个黑客组织，持续从多个公开信息源收集资料，并按文件夹归档到本地。
+  每个组织必须拆成三个主题：
+
+1. 基本情况
+2. 组织架构
+3. 活动时间
+   【输出目录结构】
+   请按如下格式生成和维护本地文件：
+   data/
+   <group_name>/
+   基本情况/
+   组织架构/
+   活动时间/
+   _meta/
+   其中：
+
+* 基本情况：存组织介绍、别名、目标行业、目标国家/地区、目标部门、常见攻击方式、常见恶意软件/漏洞、典型TTP
+* 组织架构：存隶属关系、关联机构、子组织、成员姓名、已披露部门/团队、命名映射、证据来源
+* 活动时间：按时间线记录事件，内容包括时间、事件摘要、来源标题、来源URL、关联实体
+* _meta：存索引、去重指纹、来源记录、抓取日志
+  【信息源要求】
+  请把来源做成可配置的 Source Registry，不要写死在业务逻辑中。
+  优先支持这些来源类别：
+
+1. MITRE ATT&CK Groups
+2. Google Threat Intelligence / Mandiant
+3. Kaspersky Securelist
+4. Microsoft Security Blog Threat Actors
+5. Palo Alto Unit 42
+6. CrowdStrike adversary / threat intelligence 页面
+7. CISA Cybersecurity Advisories / KEV
+8. 其他可配置 RSS / 研究博客 / 公告页面
+   【采集要求】
+
+* 支持 RSS 和普通网页文章采集
+* 支持增量抓取
+* 支持去重
+* 支持重试、超时、日志
+* 支持保存原始HTML和清洗后的正文
+  【核心处理逻辑】
+  对于每个组织：
+
+1. 从组织名称和 description 生成 canonical_name、aliases、search_terms
+2. 从公开来源中搜索和抓取相关文章/报告/公告
+3. 提取文章标题、发布时间、来源URL、作者、正文、站点域名
+4. 从文章中提取：
+
+   * threat_actor
+   * alias
+   * malware
+   * cve
+   * ip
+   * domain
+   * url
+   * country
+   * sector
+   * victim_org
+   * member_name
+   * org_name
+5. 将文章内容归类到三个主题目录：
+
+   * 基本情况
+   * 组织架构
+   * 活动时间
+6. 对于每一条收集结果，都必须记录：
+
+   * source_title
+   * source_url
+   * source_domain
+   * published_at
+   * collected_at
+   * confidence
+   * reasons
+7. 对重复文章和转载站做去重或降权
+   【文件格式要求】
+8. 基本情况目录下：
+
+   * overview.md：组织总体介绍，自动汇总更新
+   * aliases.json：别名列表
+   * targets.json：目标国家/行业/部门
+   * ttps.md：常见手段、恶意软件、漏洞、攻击链摘要
+9. 组织架构目录下：
+
+   * org_links.md：与国家、机构、其他组织的关联
+   * members.json：已披露成员信息
+   * subgroups.json：子组织/分支/命名映射
+10. 活动时间目录下：
+
+    * 每条事件存为一个 Markdown 文件，命名格式：
+      YYYY-MM-DD_<slug>.md
+    * 文件内容必须包含：
+      标题
+      时间
+      摘要
+      来源
+      URL
+      关联实体
+      置信度
+      reasons
+11. _meta 目录下：
+
+    * index.json：该组织下所有文件索引
+    * fingerprints.json：URL hash / title hash / text hash
+    * sources.json：已使用来源清单
+    * run_log.jsonl：抓取和处理日志
+      【误报控制要求】
+
+* 不要因为只命中一次组织名就认定相关
+* 标题命中 + 正文多次命中 + alias/CVE/malware/target 同时出现时，提升置信度
+* 聚合转载站、摘要站、二次转发站降权
+* 所有匹配都必须输出 reasons
+  【实现要求】
+* Python 3.11+
+* 代码模块化
+* 使用 httpx、beautifulsoup4、feedparser、pydantic、tenacity、rapidfuzz、pandas
+* 可选使用 SQLite 或 PostgreSQL 作为内部状态库，但最终归档结果必须落盘为文件
+* 所有关键函数写 docstring
+* 提供 CLI：
+
+  * import_csv
+  * collect_sources
+  * process_articles
+  * build_group_files
+  * generate_summary
+    【输出要求】
+    请严格按顺序输出：
+
+1. 系统设计说明
+2. 项目目录结构
+3. 配置文件样例
+4. requirements.txt
+5. README.md
+6. 然后按文件路径逐个输出完整代码
+   先从第 1 部分“系统设计说明”开始输出。

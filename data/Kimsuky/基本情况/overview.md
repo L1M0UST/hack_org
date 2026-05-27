@@ -1,0 +1,1 @@
+Kimsuky是一个活跃的韩语威胁行为者组织。该组织主要针对韩国实体，同时攻击活动也涉及巴西和德国。其行动聚焦于国防、政府和医疗领域。Kimsuky通过鱼叉式网络钓鱼邮件获取初始访问，邮件中包含如JSE投递器等恶意附件。该组织使用多样化的恶意软件工具包，特别是PebbleDash平台及其变体（例如httpMalice、用Rust编写的HelloDoor），以及AppleSeed和HappyDoor。后渗透策略包括利用Visual Studio Code Remote Tunneling和DWAgent等合法工具建立隐蔽访问。技术能力包括使用Rust编程语言。具体受害者包括巴西和德国的国防相关实体。

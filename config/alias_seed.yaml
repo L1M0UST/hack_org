@@ -1,0 +1,23 @@
+# Human-maintained alias seed. These entries are imported as confirmed aliases.
+# Use this file for relations you are comfortable using for automatic merging.
+groups:
+  - canonical_name: APT28
+    aliases:
+      - Fancy Bear
+      - Sofacy
+      - Pawn Storm
+      - STRONTIUM
+      - Forest Blizzard
+  - canonical_name: APT37
+    aliases:
+      - ScarCruft
+      - Group123
+      - Reaper
+  - canonical_name: Lazarus
+    aliases:
+      - Hidden Cobra
+      - Guardians of Peace
+relations:
+  - source: Andariel
+    target: Lazarus
+    relation_type: related_to

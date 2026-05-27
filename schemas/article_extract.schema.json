@@ -1,0 +1,270 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hack-org.local/schemas/article_extract.schema.json",
+  "title": "ArticleExtractResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "task_type",
+    "document_id",
+    "processing_result",
+    "matched_groups",
+    "basic_profile_updates",
+    "organization_structure_updates",
+    "activity_events",
+    "apt_table_candidates",
+    "discarded_claims"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "task_type": { "const": "article_extract" },
+    "document_id": { "type": "string", "minLength": 1 },
+    "processing_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["is_relevant", "document_summary", "language", "discard_reason"],
+      "properties": {
+        "is_relevant": { "type": "boolean" },
+        "document_summary": { "type": "string" },
+        "language": { "type": ["string", "null"] },
+        "discard_reason": { "type": ["string", "null"] }
+      }
+    },
+    "matched_groups": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/matched_group" }
+    },
+    "basic_profile_updates": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/basic_fact" }
+    },
+    "organization_structure_updates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relations", "members"],
+      "properties": {
+        "relations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/relation_update" }
+        },
+        "members": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/member_update" }
+        }
+      }
+    },
+    "activity_events": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/activity_event" }
+    },
+    "apt_table_candidates": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/apt_table_candidate" }
+    },
+    "discarded_claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim", "reason"],
+        "properties": {
+          "claim": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "matched_group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["group_id", "canonical_name", "match_confidence", "match_reasons"],
+      "properties": {
+        "group_id": { "type": "string" },
+        "canonical_name": { "type": "string" },
+        "match_confidence": { "$ref": "#/$defs/confidence" },
+        "match_reasons": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "basic_fact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "group_id",
+        "fact_type",
+        "fact_value",
+        "normalized_value",
+        "confidence",
+        "evidence_text",
+        "source_url",
+        "source_title",
+        "published_at"
+      ],
+      "properties": {
+        "group_id": { "type": "string" },
+        "fact_type": {
+          "enum": [
+            "suspected_source",
+            "target_country",
+            "target_sector",
+            "target_department",
+            "attack_type",
+            "attack_pattern",
+            "technical_skill",
+            "malware",
+            "cve",
+            "tactic",
+            "common_language",
+            "victim_org"
+          ]
+        },
+        "fact_value": { "type": "string" },
+        "normalized_value": { "type": "string" },
+        "confidence": { "$ref": "#/$defs/confidence" },
+        "evidence_text": { "type": "string", "minLength": 1 },
+        "source_url": { "type": "string" },
+        "source_title": { "type": "string" },
+        "published_at": { "type": ["string", "null"], "format": "date-time" }
+      }
+    },
+    "relation_update": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "group_id",
+        "relation_type",
+        "target_entity_type",
+        "target_name",
+        "confidence",
+        "evidence_text"
+      ],
+      "properties": {
+        "group_id": { "type": "string" },
+        "relation_type": {
+          "enum": ["subgroup_of", "linked_to", "attributed_to", "associated_with"]
+        },
+        "target_entity_type": {
+          "enum": ["threat_actor", "country", "agency", "department", "organization", "person", "unknown"]
+        },
+        "target_name": { "type": "string" },
+        "confidence": { "$ref": "#/$defs/confidence" },
+        "evidence_text": { "type": "string", "minLength": 1 }
+      }
+    },
+    "member_update": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["group_id", "member_name", "role", "confidence", "evidence_text"],
+      "properties": {
+        "group_id": { "type": "string" },
+        "member_name": { "type": "string" },
+        "role": { "type": ["string", "null"] },
+        "confidence": { "$ref": "#/$defs/confidence" },
+        "evidence_text": { "type": "string", "minLength": 1 }
+      }
+    },
+    "activity_event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "group_id",
+        "event_date",
+        "date_precision",
+        "event_type",
+        "title",
+        "summary",
+        "targets",
+        "techniques",
+        "malware",
+        "vulnerabilities",
+        "iocs",
+        "confidence",
+        "evidence_texts"
+      ],
+      "properties": {
+        "group_id": { "type": "string" },
+        "event_date": { "type": ["string", "null"], "format": "date" },
+        "date_precision": { "enum": ["day", "month", "year", "unknown"] },
+        "event_type": {
+          "enum": [
+            "campaign",
+            "intrusion",
+            "disclosure",
+            "attribution",
+            "arrest",
+            "tooling",
+            "vulnerability_exploitation",
+            "other"
+          ]
+        },
+        "title": { "type": "string" },
+        "summary": { "type": "string" },
+        "targets": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["countries", "sectors", "organizations"],
+          "properties": {
+            "countries": { "type": "array", "items": { "type": "string" } },
+            "sectors": { "type": "array", "items": { "type": "string" } },
+            "organizations": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "techniques": { "type": "array", "items": { "type": "string" } },
+        "malware": { "type": "array", "items": { "type": "string" } },
+        "vulnerabilities": { "type": "array", "items": { "type": "string" } },
+        "iocs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["domains", "ips", "urls", "hashes"],
+          "properties": {
+            "domains": { "type": "array", "items": { "type": "string" } },
+            "ips": { "type": "array", "items": { "type": "string" } },
+            "urls": { "type": "array", "items": { "type": "string" } },
+            "hashes": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "confidence": { "$ref": "#/$defs/confidence" },
+        "evidence_texts": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "apt_table_candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "group_id",
+        "apt_organization",
+        "attack_type",
+        "technical_skills",
+        "suspected_source",
+        "affected_industry",
+        "alias",
+        "attack_pattern",
+        "target_country",
+        "common_language",
+        "tactics"
+      ],
+      "properties": {
+        "group_id": { "type": "string" },
+        "apt_organization": { "type": "string" },
+        "attack_type": { "type": "array", "items": { "type": "string" } },
+        "technical_skills": { "type": "array", "items": { "type": "string" } },
+        "suspected_source": { "type": "array", "items": { "type": "string" } },
+        "affected_industry": { "type": "array", "items": { "type": "string" } },
+        "alias": { "type": "array", "items": { "type": "string" } },
+        "attack_pattern": { "type": "array", "items": { "type": "string" } },
+        "target_country": { "type": "array", "items": { "type": "string" } },
+        "common_language": { "type": "array", "items": { "type": "string" } },
+        "tactics": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

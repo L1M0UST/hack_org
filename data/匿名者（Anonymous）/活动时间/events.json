@@ -1,0 +1,20 @@
+{
+  "events": [
+    {
+      "event_date": "2022-09-01",
+      "date_precision": "month",
+      "event_type": "other",
+      "title": "Anonymous launches cyberattacks against Iranian government",
+      "summary": "The group Anonymous took responsibility for a series of cyberattacks against the Iranian government that took down two main Iranian government websites and the websites of several state media organizations.",
+      "confidence": 0.9
+    },
+    {
+      "event_date": "2026-01-11",
+      "date_precision": "day",
+      "event_type": "intrusion",
+      "title": "Huge Networks基础设施被入侵，用于发起针对巴西ISP的DDoS攻击",
+      "summary": "攻击者利用Huge Networks公司CEO的私有SSH密钥，通过入侵其基础设施，构建了一个基于Mirai恶意软件变体的僵尸网络。该僵尸网络利用易受CVE-2023-1389漏洞影响的TP-Link路由器，对巴西的其他ISP发起大规模的DNS反射和放大DDoS攻击。",
+      "confidence": 0.85
+    }
+  ]
+}

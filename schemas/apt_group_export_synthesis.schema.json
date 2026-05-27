@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hack-org.local/schemas/apt_group_export_synthesis.schema.json",
+  "title": "AptGroupExportSynthesisResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "task_type", "group_id", "apt_group_export"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "task_type": { "const": "apt_group_export_synthesis" },
+    "group_id": { "type": "string" },
+    "apt_group_export": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "apt_organization",
+        "organization_code",
+        "team_name",
+        "attack_type",
+        "technical_skills",
+        "suspected_source",
+        "affected_industry",
+        "alias",
+        "attack_pattern",
+        "attack_frequency",
+        "target_country",
+        "earliest_active_time",
+        "active_time",
+        "common_language",
+        "team_description",
+        "tactics",
+        "associated_domain",
+        "associative_hash",
+        "associative_ip",
+        "associative_url",
+        "related_certificates"
+      ],
+      "properties": {
+        "apt_organization": { "type": "string" },
+        "organization_code": { "type": "string" },
+        "team_name": { "type": "string" },
+        "attack_type": { "type": "string" },
+        "technical_skills": { "type": "string" },
+        "suspected_source": { "type": "string" },
+        "affected_industry": { "type": "string" },
+        "alias": { "type": "string" },
+        "attack_pattern": { "type": "string" },
+        "attack_frequency": { "type": "string" },
+        "target_country": { "type": "string" },
+        "earliest_active_time": { "type": "string" },
+        "active_time": { "type": "string" },
+        "common_language": { "type": "string" },
+        "team_description": { "type": "string" },
+        "tactics": { "type": "string" },
+        "associated_domain": { "type": "string" },
+        "associative_hash": { "type": "string" },
+        "associative_ip": { "type": "string" },
+        "associative_url": { "type": "string" },
+        "related_certificates": { "type": "string" }
+      }
+    }
+  }
+}

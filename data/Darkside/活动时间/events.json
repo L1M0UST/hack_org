@@ -1,0 +1,12 @@
+{
+  "events": [
+    {
+      "event_date": "2026-05-20",
+      "date_precision": "day",
+      "event_type": "disclosure",
+      "title": "PocketAgents论文披露DarkSide攻击模拟评估结果",
+      "summary": "研究论文披露了在模拟DarkSide攻击的实验中，使用PocketAgents防御代理成功检测并阻止攻击的评估结果。在18次试验中，13次成功执行网络阻断行动。",
+      "confidence": 0.85
+    }
+  ]
+}

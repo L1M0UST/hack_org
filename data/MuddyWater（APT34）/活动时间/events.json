@@ -1,0 +1,12 @@
+{
+  "events": [
+    {
+      "event_date": "2026-02-01",
+      "date_precision": "month",
+      "event_type": "intrusion",
+      "title": "在美国和以色列网络中的预置访问",
+      "summary": "MuddyWater组织在军事打击开始前就已确认在美国和以色列网络中保持活跃。目标包括银行、机场、非政府组织和一家美国公司的以色列分部。活动包括使用新发现的后门Dindoor和Fakeset进行数据窃取尝试。",
+      "confidence": 0.9
+    }
+  ]
+}

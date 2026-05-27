@@ -1,0 +1,11 @@
+{
+  "urls": {
+    "1a2734cd98a4337e2d9be63b4431baab05e03a25608fc3c7b86a0f5e951b824f": "https://attack.mitre.org/groups/"
+  },
+  "titles": {
+    "fe44faaf016f2898d37cbbed785cbb37a114ae8ffb1a3f35f4c760d65984bd6a": "MITRE ATT&CK Groups"
+  },
+  "texts": {
+    "34ca074e19f69f36c3a0ee5658d26840a3dff14781e26ce5d043eea20b176619": "E:\\code\\py\\hack_org\\.state\\raw\\mitre_attack_groups\\1a2734cd98a4337e\\clean.txt"
+  }
+}

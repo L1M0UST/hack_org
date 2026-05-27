@@ -1,0 +1,142 @@
+{
+  "facts": [
+    {
+      "fact_type": "attack_pattern",
+      "fact_value": "JSE droppers",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "attack_type",
+      "fact_value": "spear-phishing",
+      "confidence": 1.0,
+      "current_best": true
+    },
+    {
+      "fact_type": "common_language",
+      "fact_value": "Korean",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "AppleSeed",
+      "confidence": 1.0,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "PebbleDash",
+      "confidence": 1.0,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "HelloDoor",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "httpMalice",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "httpTroy",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "MemLoad",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "HappyDoor",
+      "confidence": 0.8,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "Kimsuky",
+      "confidence": 0.9,
+      "current_best": false
+    },
+    {
+      "fact_type": "tactic",
+      "fact_value": "DWAgent",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "tactic",
+      "fact_value": "VSCode Tunneling",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_country",
+      "fact_value": "South Korea",
+      "confidence": 1.0,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_country",
+      "fact_value": "Brazil",
+      "confidence": 0.8,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_country",
+      "fact_value": "Germany",
+      "confidence": 0.8,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_sector",
+      "fact_value": "defense",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_sector",
+      "fact_value": "government",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_sector",
+      "fact_value": "medical",
+      "confidence": 0.8,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_sector",
+      "fact_value": "政府",
+      "confidence": 0.8,
+      "current_best": false
+    },
+    {
+      "fact_type": "technical_skill",
+      "fact_value": "Rust programming language",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "victim_org",
+      "fact_value": "Brazilian defense organization",
+      "confidence": 0.8,
+      "current_best": true
+    },
+    {
+      "fact_type": "victim_org",
+      "fact_value": "German defense firm",
+      "confidence": 0.8,
+      "current_best": true
+    }
+  ]
+}

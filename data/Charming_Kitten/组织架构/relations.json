@@ -1,0 +1,9 @@
+{
+  "relations": [
+    {
+      "relation_type": "attributed_to",
+      "target_name": "IRGC",
+      "confidence": 0.9
+    }
+  ]
+}

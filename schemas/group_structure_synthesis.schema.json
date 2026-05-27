@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hack-org.local/schemas/group_structure_synthesis.schema.json",
+  "title": "GroupStructureSynthesisResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "task_type",
+    "group_id",
+    "canonical_name",
+    "latest_structure_overview",
+    "selected_relation_ids",
+    "selected_member_ids",
+    "conflicts"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "task_type": { "const": "group_structure_synthesis" },
+    "group_id": { "type": "string" },
+    "canonical_name": { "type": "string" },
+    "latest_structure_overview": { "type": "string" },
+    "selected_relation_ids": { "type": "array", "items": { "type": "string" } },
+    "selected_member_ids": { "type": "array", "items": { "type": "string" } },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["field", "values", "resolution"],
+        "properties": {
+          "field": { "type": "string" },
+          "values": { "type": "array", "items": { "type": "string" } },
+          "resolution": { "type": "string" }
+        }
+      }
+    }
+  }
+}

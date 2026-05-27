@@ -1,0 +1,69 @@
+{
+  "sources": [
+    {
+      "source_title": "MITRE ATT&CK Groups",
+      "source_url": "https://attack.mitre.org/groups/",
+      "source_domain": "attack.mitre.org",
+      "published_at": null,
+      "collected_at": "2026-05-13T09:54:08.592456+00:00",
+      "confidence": 0.6,
+      "reasons": [
+        "body repeated matches: SEA",
+        "high fuzzy match: 100",
+        "supporting entities found"
+      ]
+    },
+    {
+      "source_title": "State of ransomware in 2026",
+      "source_url": "https://securelist.com/state-of-ransomware-in-2026/119761/",
+      "source_domain": "securelist.com",
+      "published_at": "2026-05-12T07:00:04+00:00",
+      "collected_at": "2026-05-13T09:54:16.780414+00:00",
+      "confidence": 0.57,
+      "reasons": [
+        "body repeated matches: SEA",
+        "high fuzzy match: 100",
+        "supporting entities found"
+      ]
+    },
+    {
+      "source_title": "Accelerating detection engineering using AI-assisted synthetic attack logs generation",
+      "source_url": "https://www.microsoft.com/en-us/security/blog/2026/05/12/accelerating-detection-engineering-using-ai-assisted-synthetic-attack-logs-generation/",
+      "source_domain": "www.microsoft.com",
+      "published_at": "2026-05-12T22:53:09+00:00",
+      "collected_at": "2026-05-13T09:54:19.299406+00:00",
+      "confidence": 0.57,
+      "reasons": [
+        "body repeated matches: SEA",
+        "high fuzzy match: 100",
+        "supporting entities found"
+      ]
+    },
+    {
+      "source_title": "Inside AD CS Escalation: Unpacking Advanced Misuse Techniques and Tools",
+      "source_url": "https://unit42.paloaltonetworks.com/active-directory-certificate-services-exploitation/",
+      "source_domain": "unit42.paloaltonetworks.com",
+      "published_at": "2026-05-11T22:00:43+00:00",
+      "collected_at": "2026-05-13T09:54:22.573627+00:00",
+      "confidence": 0.57,
+      "reasons": [
+        "body repeated matches: SEA",
+        "high fuzzy match: 100",
+        "supporting entities found"
+      ]
+    },
+    {
+      "source_title": "ABB AC500 V3 Stack Buffer Overflow in Cryptographic Message Syntax",
+      "source_url": "https://www.cisa.gov/news-events/ics-advisories/icsa-26-132-05",
+      "source_domain": "www.cisa.gov",
+      "published_at": "2026-05-12T12:00:00+00:00",
+      "collected_at": "2026-05-13T09:54:24.279713+00:00",
+      "confidence": 0.54,
+      "reasons": [
+        "body repeated matches: SEA",
+        "high fuzzy match: 100",
+        "supporting entities found"
+      ]
+    }
+  ]
+}

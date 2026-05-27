@@ -1,0 +1,12 @@
+{
+  "events": [
+    {
+      "event_date": "2026-03-08",
+      "date_precision": "day",
+      "event_type": "intrusion",
+      "title": "针对中东政府的钓鱼攻击",
+      "summary": "OilRig组织使用了一个被入侵的伊拉克外交部邮箱账户，针对中东某国政府发送了钓鱼邮件，邮件内容涉及'美国在伊朗的潜在地面行动'和'海湾军事联盟'。",
+      "confidence": 0.9
+    }
+  ]
+}

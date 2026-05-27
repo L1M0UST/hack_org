@@ -1,0 +1,26 @@
+llm:
+  provider: openai_compatible
+  base_url: https://token-plan-cn.xiaomimimo.com/v1
+  api_key_env: MIMO_API_KEY
+  model: mimo-v2.5
+  temperature: 0.1
+  timeout_seconds: 120
+  max_retries: 3
+  response_format: json_schema
+  prompts:
+    article_extract:
+      system: prompts/article_extract.system.txt
+      user_template: prompts/article_extract.user.txt
+      schema: schemas/article_extract.schema.json
+    group_profile_synthesis:
+      system: prompts/group_profile_synthesis.system.txt
+      user_template: prompts/group_profile_synthesis.user.txt
+      schema: schemas/group_profile_synthesis.schema.json
+    group_structure_synthesis:
+      system: prompts/group_structure_synthesis.system.txt
+      user_template: prompts/group_structure_synthesis.user.txt
+      schema: schemas/group_structure_synthesis.schema.json
+    apt_group_export_synthesis:
+      system: prompts/apt_group_export_synthesis.system.txt
+      user_template: prompts/apt_group_export_synthesis.user.txt
+      schema: schemas/apt_group_export_synthesis.schema.json

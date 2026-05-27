@@ -1,0 +1,22 @@
+﻿.env
+.env.*
+!.env.example
+
+# Runtime state and caches
+.state/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local environments
+.venv/
+venv/
+
+# Office/editor lock files
+.~lock.*
+
+# OS/editor noise
+.DS_Store
+Thumbs.db

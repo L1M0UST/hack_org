@@ -1,0 +1,16 @@
+TASK
+Extract structured threat-intelligence updates from the supplied document for automatic PostgreSQL ingestion.
+
+DOCUMENT
+{{document_json}}
+
+CANDIDATE GROUPS
+{{candidate_groups_json}}
+
+EXISTING DATABASE CONTEXT
+{{existing_database_context_json}}
+
+OUTPUT REQUIREMENTS
+- Return one JSON object matching the article_extract schema exactly.
+- Keep discarded_claims for claims that appear tempting but are not adequately supported by the current document.
+- Use the supplied group_id values exactly as provided.

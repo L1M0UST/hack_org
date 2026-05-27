@@ -1,0 +1,14 @@
+notifications:
+  enabled: true
+  backend: telegram
+  file:
+    output: .state/notifications/latest_report.txt
+  webhook:
+    url_env: NOTIFY_WEBHOOK_URL
+    method: POST
+  wecom:
+    webhook_url_env: WECOM_BOT_WEBHOOK_URL
+  telegram:
+    bot_token_env: TELEGRAM_BOT_TOKEN
+    chat_id_env: TELEGRAM_CHAT_ID
+    proxy_env: TELEGRAM_PROXY

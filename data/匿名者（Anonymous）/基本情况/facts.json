@@ -1,0 +1,76 @@
+{
+  "facts": [
+    {
+      "fact_type": "attack_pattern",
+      "fact_value": "DNS反射与放大攻击",
+      "confidence": 0.85,
+      "current_best": true
+    },
+    {
+      "fact_type": "attack_type",
+      "fact_value": "分布式拒绝服务攻击（DDoS）",
+      "confidence": 0.95,
+      "current_best": true
+    },
+    {
+      "fact_type": "attack_type",
+      "fact_value": "针对伊朗政府的网络攻击",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "common_language",
+      "fact_value": "葡萄牙语",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "cve",
+      "fact_value": "CVE-2023-1389",
+      "confidence": 0.85,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "Mirai",
+      "confidence": 0.8,
+      "current_best": true
+    },
+    {
+      "fact_type": "tactic",
+      "fact_value": "大规模扫描不安全路由器",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_country",
+      "fact_value": "巴西",
+      "confidence": 0.95,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_country",
+      "fact_value": "伊朗",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_sector",
+      "fact_value": "互联网服务提供商（ISP）",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_sector",
+      "fact_value": "政府",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "victim_org",
+      "fact_value": "Huge Networks",
+      "confidence": 0.9,
+      "current_best": true
+    }
+  ]
+}

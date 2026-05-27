@@ -1,0 +1,21 @@
+TASK
+Build the latest apt_group_export row for one threat group.
+
+GROUP
+{{group_json}}
+
+CURRENT BEST FACTS
+{{current_best_facts_json}}
+
+APPROVED ALIASES
+{{aliases_json}}
+
+SELECTED EVENTS SUMMARY
+{{events_summary_json}}
+
+APPROVED OVERVIEWS
+{{approved_overviews_json}}
+
+OUTPUT REQUIREMENTS
+- Return one JSON object matching the apt_group_export_synthesis schema exactly.
+- Do not include facts that are not present in the supplied input.

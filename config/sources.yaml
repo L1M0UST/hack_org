@@ -1,0 +1,2025 @@
+# Source registry for public threat intelligence collection.
+# Policy: collect A/B tier sources only; store all fetched items first, filter locally later.
+sources:
+  - id: mitre_attack_groups
+    name: MITRE ATT&CK Groups
+    type: webpage
+    url: https://attack.mitre.org/groups/
+    enabled: true
+    weight: 1.0
+    category: knowledge_base
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, intrusion set, malware, technique]
+
+  - id: mandiant_blog
+    name: Google Cloud / Mandiant Threat Intelligence
+    type: rss
+    url: https://feeds.feedburner.com/threatintelligence/pvexyqv7v0v
+    enabled: true
+    weight: 1.0
+    category: vendor_threat_research
+    tier: A
+    max_items: 30
+    fetch_full_article: true
+    keywords: [APT, threat actor, espionage, campaign, malware, ransomware, intrusion]
+
+  - id: kaspersky_securelist
+    name: Kaspersky Securelist
+    type: rss
+    url: https://securelist.com/feed/
+    enabled: true
+    weight: 0.95
+    category: vendor_threat_research
+    tier: A
+    max_items: 30
+    fetch_full_article: true
+    keywords: [APT, threat actor, campaign, malware, ransomware, espionage]
+
+  - id: microsoft_security
+    name: Microsoft Security Blog
+    type: rss
+    url: https://www.microsoft.com/en-us/security/blog/feed/
+    enabled: true
+    weight: 0.95
+    category: vendor_threat_research
+    tier: A
+    max_items: 30
+    fetch_full_article: true
+    keywords: [threat actor, ransomware, nation-state, espionage, Microsoft Threat Intelligence]
+
+  - id: unit42
+    name: Palo Alto Unit 42
+    type: rss
+    url: https://unit42.paloaltonetworks.com/feed/
+    enabled: true
+    weight: 0.95
+    category: vendor_threat_research
+    tier: A
+    max_items: 30
+    fetch_full_article: true
+    keywords: [APT, threat actor, campaign, malware, ransomware, CVE]
+
+  - id: crowdstrike_blog
+    name: CrowdStrike Blog
+    type: rss
+    url: https://www.crowdstrike.com/blog/feed/
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    max_items: 30
+    fetch_full_article: true
+    keywords: [adversary, threat actor, ransomware, eCrime, nation-state, campaign]
+
+  - id: eset_welivesecurity
+    name: ESET WeLiveSecurity
+    type: rss
+    url: https://www.welivesecurity.com/en/rss/feed/
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    max_items: 30
+    fetch_full_article: true
+    keywords: [APT, threat actor, malware, campaign, espionage]
+
+  - id: cisco_talos_blog
+    name: Cisco Talos Blog
+    type: rss
+    url: https://blog.talosintelligence.com/rss/
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    max_items: 30
+    fetch_full_article: true
+    keywords: [threat actor, malware, campaign, vulnerability, ransomware]
+
+  - id: proofpoint_threat_insight
+    name: Proofpoint Threat Insight
+    type: rss
+    url: https://www.proofpoint.com/us/threat-insight-blog.xml
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    max_items: 30
+    fetch_full_article: true
+    keywords: [threat actor, phishing, malware, campaign, TA]
+
+  - id: sentinelone_labs
+    name: SentinelOne Labs
+    type: rss
+    url: https://www.sentinelone.com/labs/feed/
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    max_items: 30
+    fetch_full_article: true
+    keywords: [APT, threat actor, malware, ransomware, campaign]
+
+  - id: cisa_alerts
+    name: CISA Cybersecurity Advisories
+    type: rss
+    url: https://www.cisa.gov/cybersecurity-advisories/all.xml
+    enabled: true
+    weight: 0.85
+    category: government_advisory
+    tier: B
+    max_items: 30
+    fetch_full_article: true
+    keywords: [CVE, exploited, vulnerability, malware, advisory, intrusion]
+
+  - id: cisa_kev_catalog
+    name: CISA Known Exploited Vulnerabilities Catalog
+    type: api_json
+    url: https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
+    enabled: true
+    weight: 0.8
+    category: government_api
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [CVE, exploited, vulnerability]
+
+  - id: mitre_attack_enterprise_stix
+    name: MITRE ATT&CK Enterprise STIX
+    type: api_json
+    url: https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json
+    enabled: true
+    weight: 1.0
+    category: structured_cti_api
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [intrusion-set, malware, tool, campaign, relationship, attack-pattern]
+
+  - id: trendmicro_research
+    name: Trend Micro Research
+    type: webpage
+    url: https://www.trendmicro.com/en_us/research.html
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, Earth, campaign, malware, espionage, ransomware]
+
+  - id: checkpoint_research
+    name: Check Point Research
+    type: rss
+    url: https://research.checkpoint.com/feed/
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    max_items: 30
+    fetch_full_article: true
+    keywords: [APT, threat actor, campaign, malware, espionage, Iran, Middle East]
+
+  - id: therecord_media
+    name: The Record by Recorded Future News
+    type: rss
+    url: https://therecord.media/feed
+    enabled: true
+    weight: 0.82
+    category: security_news
+    tier: B
+    max_items: 40
+    fetch_full_article: true
+    keywords: [APT, hackers, espionage, cyberattack, indictment, ransomware, nation-state]
+
+  - id: bleepingcomputer
+    name: BleepingComputer
+    type: rss
+    url: https://www.bleepingcomputer.com/feed/
+    enabled: true
+    weight: 0.78
+    category: security_news
+    tier: B
+    max_items: 40
+    fetch_full_article: true
+    keywords: [APT, hackers, malware, ransomware, breach, espionage, threat actor]
+
+  - id: reddit_netsec
+    name: Reddit r/netsec
+    type: rss
+    url: https://www.reddit.com/r/netsec/.rss
+    enabled: true
+    weight: 0.62
+    category: community_monitoring
+    tier: B
+    max_items: 40
+    fetch_full_article: false
+    keywords: [APT, threat actor, malware, campaign, report, intelligence]
+
+  - id: aptnotes_commits
+    name: APTnotes GitHub Updates
+    type: rss
+    url: https://github.com/aptnotes/data/commits/master.atom
+    enabled: true
+    weight: 0.9
+    category: static_report_repository
+    tier: A
+    max_items: 30
+    fetch_full_article: true
+    keywords: [APT, report, PDF, threat actor, campaign, malware]
+
+  - id: awesome_threat_intel_commits
+    name: Awesome Threat Intelligence GitHub Updates
+    type: rss
+    url: https://github.com/hslatman/awesome-threat-intelligence/commits/master.atom
+    enabled: true
+    weight: 0.68
+    category: source_discovery
+    tier: B
+    max_items: 30
+    fetch_full_article: true
+    keywords: [threat intelligence, APT, OSINT, malware, report, feeds]
+
+  - id: ncsc_uk_news
+    name: UK NCSC News RSS
+    type: rss
+    url: https://www.ncsc.gov.uk/api/1/services/v1/news-rss-feed.xml
+    enabled: true
+    weight: 0.82
+    category: government_advisory
+    tier: B
+    max_items: 30
+    fetch_full_article: true
+    keywords: [APT, threat actor, advisory, malware, vulnerability, ransomware]
+
+  - id: ncsc_uk_reports
+    name: UK NCSC Reports RSS
+    type: rss
+    url: https://www.ncsc.gov.uk/api/1/services/v1/report-rss-feed.xml
+    enabled: true
+    weight: 0.84
+    category: government_report
+    tier: B
+    max_items: 30
+    fetch_full_article: true
+    keywords: [APT, threat actor, report, malware, espionage, campaign]
+
+  - id: certfr_alerts
+    name: CERT-FR Alerts
+    type: rss
+    url: https://www.cert.ssi.gouv.fr/alerte/feed/
+    enabled: true
+    weight: 0.8
+    category: government_advisory
+    tier: B
+    max_items: 30
+    fetch_full_article: true
+    keywords: [APT, malware, vulnérabilité, CVE, cyberattaque, rançongiciel]
+
+  - id: certfr_advisories
+    name: CERT-FR Advisories
+    type: rss
+    url: https://www.cert.ssi.gouv.fr/avis/feed/
+    enabled: true
+    weight: 0.78
+    category: government_advisory
+    tier: B
+    max_items: 30
+    fetch_full_article: true
+    keywords: [APT, malware, vulnérabilité, CVE, cyberattaque, rançongiciel]
+
+  - id: bsi_cert_bund_advisories
+    name: BSI CERT-Bund Advisories
+    type: rss
+    url: https://wid.cert-bund.de/portal/wid/securityadvisory?format=rss
+    enabled: true
+    weight: 0.78
+    category: government_advisory
+    tier: B
+    max_items: 30
+    fetch_full_article: true
+    keywords: [APT, malware, Schwachstelle, CVE, advisory, cyber]
+
+  - id: doj_press_releases
+    name: US DOJ Press Releases
+    type: webpage
+    url: https://www.justice.gov/news/press-releases
+    enabled: true
+    weight: 0.86
+    category: government_legal
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [cyber, indictment, hacker, hackers, GRU, MSS, APT, malware, espionage]
+
+  - id: cncert_reports
+    name: CNCERT/CC Public Reports
+    type: webpage
+    url: https://www.cert.org.cn/publish/main/46/index.html
+    enabled: true
+    weight: 0.92
+    category: china_government_report
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, 高级持续性威胁, 境外, 网络攻击, 威胁报告, 安全报告]
+
+  - id: cncert_notices
+    name: CNCERT/CC Security Notices
+    type: webpage
+    url: https://www.cert.org.cn/publish/main/12/index.html
+    enabled: true
+    weight: 0.88
+    category: china_government_advisory
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, 高级持续性威胁, 网络攻击, 通报, 漏洞, 木马]
+
+  - id: cverc_official
+    name: 国家计算机病毒应急处理中心
+    type: webpage
+    url: https://www.cverc.org.cn/
+    enabled: true
+    weight: 0.9
+    category: china_government_report
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, 伏特台风, 间谍软件, 木马, 境外, 技术分析, 网络攻击]
+
+  - id: qianxin_ti_blog
+    name: 奇安信威胁情报中心
+    type: webpage
+    url: https://ti.qianxin.com/blog/
+    enabled: true
+    weight: 0.9
+    category: china_vendor_threat_research
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, APT-Q, 红雨滴, 高级威胁, 攻击活动, 威胁情报]
+
+  - id: qianxin_apt_detail
+    name: 奇安信 APT 组织库
+    type: webpage
+    url: https://ti.qianxin.com/apt/detail/
+    enabled: true
+    weight: 0.88
+    category: china_vendor_actor_database
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, APT-Q, 组织, 别名, 攻击目标, 技术]
+
+  - id: qihoo360_apt
+    name: 360 APT 高级威胁研究
+    type: webpage
+    url: https://apt.360.net/
+    enabled: true
+    weight: 0.9
+    category: china_vendor_actor_database
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, APT-C, 高级威胁, 境外, 攻击组织, 攻击活动]
+
+  - id: qihoo360_ti_blog
+    name: 360 威胁情报中心
+    type: webpage
+    url: https://ti.360.net/blog/
+    enabled: true
+    weight: 0.86
+    category: china_vendor_threat_research
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, APT-C, 威胁情报, 攻击组织, 木马, 漏洞利用]
+
+  - id: threatbook_intelligence
+    name: 微步在线情报局
+    type: webpage
+    url: https://threatbook.com/en/intelligence
+    enabled: true
+    weight: 0.84
+    category: china_vendor_threat_research
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, ThreatBook, 威胁情报, 攻击组织, IOC, 报告]
+
+  - id: threatbook_io_research
+    name: ThreatBook Research
+    type: webpage
+    url: https://threatbook.io/
+    enabled: true
+    weight: 0.78
+    category: china_vendor_threat_research
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, APAC, threat intelligence, malware]
+
+  - id: antiy_reports
+    name: 安天分析报告
+    type: webpage
+    url: https://www.antiy.net/p/analysis-report/
+    enabled: true
+    weight: 0.86
+    category: china_vendor_threat_research
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, 安天, CERT, 样本分析, 攻击组织, 工控, 关键基础设施]
+
+  - id: nsfocus_threat_intel_blog
+    name: 绿盟科技威胁情报博客
+    type: webpage
+    url: https://blog.nsfocus.net/
+    enabled: true
+    weight: 0.78
+    category: china_vendor_threat_research
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, 威胁情报, 攻击活动, 木马, 漏洞, 东亚]
+
+  - id: tencent_security_research
+    name: 腾讯安全研究报告
+    type: webpage
+    url: https://s.tencent.com/research/report/
+    enabled: true
+    weight: 0.78
+    category: china_vendor_threat_research
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, 腾讯安全, 威胁情报, 移动安全, 攻击活动, 报告]
+
+  - id: anquanke_news
+    name: 安全客
+    type: webpage
+    url: https://www.anquanke.com/
+    enabled: true
+    weight: 0.68
+    category: chinese_security_media
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, 高级持续性威胁, 威胁情报, 攻击组织, 安全报告]
+
+  - id: secrss
+    name: 安全内参
+    type: webpage
+    url: https://www.secrss.com/
+    enabled: true
+    weight: 0.68
+    category: chinese_security_media
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, 高级持续性威胁, 网络攻击, 威胁情报, 报告, 归因]
+
+  - id: positive_technologies_research
+    name: Positive Technologies Research
+    type: webpage
+    url: https://www.ptsecurity.com/ww-en/analytics/
+    enabled: true
+    weight: 0.84
+    category: ru_vendor_threat_research
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, Werewolf, threat actor, malware, Russia, targeted attack]
+
+  - id: bizone_research
+    name: BI.ZONE Research
+    type: webpage
+    url: https://bi.zone/eng/expertise/research/
+    enabled: true
+    weight: 0.82
+    category: ru_vendor_threat_research
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, Werewolf, threat actor, malware, Russia, CIS, targeted attack]
+
+  - id: rostelecom_solar_analytics
+    name: Rostelecom-Solar Analytics
+    type: webpage
+    url: https://rt-solar.ru/analytics/
+    enabled: false
+    weight: 0.76
+    category: ru_vendor_threat_research
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, JSOC, Solar, Russia, cyberattack, threat report]
+
+  - id: drweb_news
+    name: Doctor Web News
+    type: rss
+    url: https://news.drweb.com/rss/
+    enabled: true
+    weight: 0.72
+    category: ru_vendor_malware_research
+    tier: B
+    max_items: 30
+    fetch_full_article: true
+    keywords: [APT, malware, Trojan, targeted attack, espionage]
+
+  - id: cert_ua_articles
+    name: CERT-UA Cyber Alerts
+    type: webpage
+    url: https://cert.gov.ua/articles
+    enabled: true
+    weight: 0.9
+    category: government_advisory
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, UAC, Sandworm, APT28, APT29, cyberattack, malware, Russia]
+
+  - id: group_ib_blog
+    name: Group-IB Blog
+    type: webpage
+    url: https://www.group-ib.com/blog/
+    enabled: true
+    weight: 0.8
+    category: vendor_threat_research
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, Advanced Persistent Threats, threat actor, FIN, Carbanak, malware]
+
+  - id: bae_systems_threat_intel
+    name: BAE Systems Threat Intelligence
+    type: webpage
+    url: https://www.baesystems.com/en/cybersecurity/feature/threat-intelligence
+    enabled: false
+    weight: 0.78
+    category: uk_vendor_threat_research
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat intelligence, Russia, North Korea, Snake, malware]
+
+  - id: nccgroup_research
+    name: NCC Group Research
+    type: webpage
+    url: https://www.nccgroup.com/us/research-blog/
+    enabled: false
+    weight: 0.78
+    category: uk_vendor_threat_research
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, Turla, Snake, malware, research]
+
+  - id: secureworks_research
+    name: Secureworks CTU Research
+    type: webpage
+    url: https://www.secureworks.com/research
+    enabled: true
+    weight: 0.82
+    category: vendor_threat_research
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, IRON, threat group, CTU, threat actor, Iran, Russia]
+
+  - id: pwc_threat_intelligence
+    name: PwC Threat Intelligence
+    type: webpage
+    url: https://www.pwc.com/gx/en/issues/cybersecurity/cyber-threat-intelligence.html
+    enabled: true
+    weight: 0.76
+    category: uk_vendor_threat_research
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat intelligence, Iran, Middle East, cyber threat, report]
+
+  - id: sekoia_blog
+    name: Sekoia.io Blog
+    type: rss
+    url: https://blog.sekoia.io/feed/
+    enabled: true
+    weight: 0.84
+    category: fr_vendor_threat_research
+    tier: A
+    max_items: 30
+    fetch_full_article: true
+    keywords: [APT, TDR, threat actor, FLINT, malware, Russia, China, Iran, North Korea]
+
+  - id: harfanglab_lab
+    name: HarfangLab Inside The Lab
+    type: webpage
+    url: https://harfanglab.io/insidethelab/
+    enabled: true
+    weight: 0.76
+    category: fr_vendor_threat_research
+    tier: B
+    max_items: 30
+    fetch_full_article: true
+    keywords: [APT, China, Ivanti, threat actor, malware, EDR]
+
+  - id: intrinsec_blog
+    name: Intrinsec CERT Blog
+    type: webpage
+    url: https://www.intrinsec.com/en/blog/
+    enabled: true
+    weight: 0.72
+    category: fr_vendor_threat_research
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, CERT, CTI, Threat Intelligence Report, malware, francophone]
+
+  - id: enisa_threat_landscape
+    name: ENISA Threat Landscape
+    type: webpage
+    url: https://tools.enisa.europa.eu/topics/cyber-threats/threats-and-trends/enisa-threat-landscape
+    enabled: true
+    weight: 0.76
+    category: eu_government_report
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat landscape, threat actor, Europe, cyber threat, report]
+
+  - id: bsi_publications
+    name: BSI Publications
+    type: webpage
+    url: https://www.bsi.bund.de/EN/Service-Navi/Publications/publications_node.html
+    enabled: false
+    weight: 0.76
+    category: government_report
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, cyber threat, Lagebericht, Russia, Germany, report]
+
+  - id: malpedia_actors
+    name: Malpedia Actors API
+    type: api_json
+    url: https://malpedia.caad.fkie.fraunhofer.de/api/list/actors
+    enabled: false
+    weight: 0.95
+    category: structured_cti_api
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [actor, APT, malware, alias, attribution]
+    api_key_env: MALPEDIA_API_KEY
+    auth_header: Authorization
+    auth_prefix: "Bearer "
+
+  - id: otx_pulses_search_apt
+    name: AlienVault OTX Pulse Search
+    type: api_json
+    url: https://otx.alienvault.com/api/v1/pulses/search?q=APT&limit=50
+    enabled: false
+    weight: 0.86
+    category: structured_ioc_api
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, pulse, IOC, malware, campaign, target]
+    api_key_env: OTX_API_KEY
+    auth_header: X-OTX-API-KEY
+
+  - id: virustotal_search_apt
+    name: VirusTotal Search API
+    type: api_json
+    url: https://www.virustotal.com/api/v3/search?query=APT
+    enabled: false
+    weight: 0.76
+    category: structured_ioc_api
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, malware, sample, relationship, infrastructure]
+    api_key_env: VIRUSTOTAL_API_KEY
+    auth_header: x-apikey
+
+  - id: opencti_public_graphql
+    name: OpenCTI GraphQL API
+    type: api_json
+    url: https://opencti.example/graphql
+    enabled: false
+    weight: 0.9
+    category: structured_cti_api
+    tier: A
+    max_items: 1
+    fetch_full_article: true
+    keywords: [intrusion-set, relationship, malware, tool, campaign, sector]
+    api_key_env: OPENCTI_API_KEY
+    auth_header: Authorization
+    auth_prefix: "Bearer "
+
+  - id: misp_public_instance
+    name: MISP Public Instance API
+    type: api_json
+    url: https://misp.example/events/restSearch
+    enabled: false
+    weight: 0.82
+    category: structured_event_api
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, event, attribute, IOC, malware, threat actor]
+    api_key_env: MISP_API_KEY
+    auth_header: Authorization
+
+  - id: twitter_x_threatintel
+    name: X ThreatIntel Search API
+    type: api_json
+    url: https://api.x.com/2/tweets/search/recent?query=%23ThreatIntel%20APT
+    enabled: false
+    weight: 0.62
+    category: social_monitoring
+    tier: B
+    max_items: 1
+    fetch_full_article: true
+    keywords: [ThreatIntel, APT, malware, campaign, IOC, report]
+    api_key_env: X_BEARER_TOKEN
+    auth_header: Authorization
+    auth_prefix: "Bearer "
+
+# Expanded global APT intelligence sources. Generated from user-provided registry on 2026-05-22.
+
+  - id: mitre_attack
+    name: MITRE ATT&CK???
+    type: api_json
+    url: https://raw.githubusercontent.com/mitre/cti/master/enterprise-attack/enterprise-attack.json
+    enabled: true
+    weight: 1.0
+    category: knowledge_base
+    tier: A
+    priority: P0
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: malpedia
+    name: Malpedia??????
+    type: webpage
+    url: https://malpedia.caad.fkie.fraunhofer.de
+    enabled: true
+    weight: 1.0
+    category: knowledge_base
+    tier: A
+    priority: P0
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: alienvault_otx
+    name: OTX??????
+    type: api_json
+    url: https://otx.alienvault.com/api/v1/search/pulses?q=APT&limit=50
+    enabled: true
+    weight: 1.0
+    category: structured_api
+    tier: A
+    priority: P0
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: opencti
+    name: OpenCTI??????
+    type: webpage
+    url: https://demo.opencti.io
+    enabled: true
+    weight: 0.9
+    category: structured_api
+    tier: A
+    priority: P1
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: misp_circl
+    name: MISP???????
+    type: webpage
+    url: https://www.circl.lu/services/misp-malware-ioc
+    enabled: true
+    weight: 0.9
+    category: structured_api
+    tier: A
+    priority: P1
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: etda_apt_map
+    name: ??ETDA???????
+    type: api_json
+    url: https://apt.etda.or.th/cgi-bin/listgroups.cgi
+    enabled: true
+    weight: 0.9
+    category: knowledge_base
+    tier: A
+    priority: P1
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: threatfox
+    name: ThreatFox IOC??
+    type: webpage
+    url: https://threatfox.abuse.ch
+    enabled: true
+    weight: 0.75
+    category: structured_api
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: greynoise
+    name: GreyNoise???????
+    type: webpage
+    url: https://www.greynoise.io
+    enabled: true
+    weight: 0.55
+    category: structured_api
+    tier: B
+    priority: P3
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: virustotal
+    name: VirusTotal?????
+    type: webpage
+    url: https://www.virustotal.com
+    enabled: true
+    weight: 0.75
+    category: structured_api
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: ibm_xforce
+    name: IBM X-Force????
+    type: webpage
+    url: https://exchange.xforce.ibmcloud.com
+    enabled: true
+    weight: 0.75
+    category: structured_api
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: eurepoc
+    name: ?????????
+    type: webpage
+    url: https://eurepoc.eu
+    enabled: true
+    weight: 0.75
+    category: structured_api
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: sans_isc
+    name: SANS???????
+    type: webpage
+    url: https://isc.sans.edu
+    enabled: true
+    weight: 0.55
+    category: structured_api
+    tier: B
+    priority: P3
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: attackerkb
+    name: ???APT????
+    type: webpage
+    url: https://attackerkb.com
+    enabled: true
+    weight: 0.55
+    category: structured_api
+    tier: B
+    priority: P3
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: shodan
+    name: Shodan??????
+    type: webpage
+    url: https://www.shodan.io
+    enabled: true
+    weight: 0.55
+    category: structured_api
+    tier: B
+    priority: P3
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: mandiant_google
+    name: Mandiant / ???????
+    type: rss
+    url: https://cloud.google.com/blog/topics/threat-intelligence/rss.xml
+    enabled: true
+    weight: 1.0
+    category: vendor_threat_research
+    tier: A
+    priority: P0
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: crowdstrike
+    name: CrowdStrike????
+    type: rss
+    url: https://www.crowdstrike.com/blog/feed/
+    enabled: true
+    weight: 1.0
+    category: vendor_threat_research
+    tier: A
+    priority: P0
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: cisco_talos
+    name: ??Talos????
+    type: rss
+    url: https://blog.talosintelligence.com/rss.xml
+    enabled: true
+    weight: 1.0
+    category: vendor_threat_research
+    tier: A
+    priority: P0
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: microsoft_mstic
+    name: ????????
+    type: rss
+    url: https://www.microsoft.com/en-us/security/blog/feed/
+    enabled: true
+    weight: 1.0
+    category: vendor_threat_research
+    tier: A
+    priority: P0
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: recorded_future
+    name: Recorded Future Insikt Group
+    type: rss
+    url: https://www.recordedfuture.com/blog/rss.xml
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: secureworks_ctu
+    name: SecureWorks?????
+    type: rss
+    url: https://www.secureworks.com/rss/threat-intelligence
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: volexity
+    name: Volexity??????
+    type: rss
+    url: https://www.volexity.com/blog/feed/
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: sentinellabs
+    name: ?????
+    type: rss
+    url: https://www.sentinelone.com/labs/feed/
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: proofpoint_tip
+    name: Proofpoint????
+    type: rss
+    url: https://www.proofpoint.com/us/rss.xml
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: symantec_tig
+    name: ????????
+    type: rss
+    url: https://symantec-enterprise-blogs.security.com/blogs/threat-intelligence/rss
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: dragos
+    name: Dragos??????
+    type: rss
+    url: https://www.dragos.com/feed/
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: citizen_lab
+    name: ?????
+    type: rss
+    url: https://citizenlab.ca/feed/
+    enabled: true
+    weight: 0.9
+    category: academic_ngo
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: lumen_blacklotus
+    name: Lumen??????
+    type: rss
+    url: https://blog.lumen.com/feed/
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: team_cymru
+    name: Cymru??
+    type: rss
+    url: https://www.team-cymru.com/blog/feed/
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: withsecure
+    name: WithSecure???
+    type: rss
+    url: https://labs.withsecure.com/feed
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: sophos_xops
+    name: Sophos X-Ops
+    type: rss
+    url: https://news.sophos.com/en-us/feed/
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: zscaler_threatlabz
+    name: Zscaler ThreatLabz
+    type: rss
+    url: https://www.zscaler.com/blogs/rss.xml
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: socradar
+    name: SOCRadar APT????
+    type: webpage
+    url: https://socradar.io/labs
+    enabled: true
+    weight: 0.75
+    category: platform
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: trellix
+    name: Trellix????
+    type: rss
+    url: https://www.trellix.com/feed/
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: anomali
+    name: Anomali????
+    type: rss
+    url: https://www.anomali.com/rss.xml
+    enabled: true
+    weight: 0.55
+    category: vendor_threat_research
+    tier: B
+    priority: P3
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: cncert
+    name: ?????????
+    type: rss
+    url: https://www.cert.org.cn/publish/main/12/index.xml
+    enabled: true
+    weight: 1.0
+    category: government
+    tier: A
+    priority: P0
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: ncveac
+    name: ?????????????
+    type: webpage
+    url: https://www.cverc.org.cn
+    enabled: true
+    weight: 1.0
+    category: government
+    tier: A
+    priority: P0
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: qianxin_ti
+    name: ?????????
+    type: webpage
+    url: https://www.qianxin.com/threat/report
+    enabled: true
+    weight: 1.0
+    category: vendor_threat_research
+    tier: A
+    priority: P0
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: qianxin_ti_api
+    name: ???????API??
+    type: webpage
+    url: https://ti.qianxin.com
+    enabled: true
+    weight: 1.0
+    category: structured_api
+    tier: A
+    priority: P0
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: ti360
+    name: 360??????
+    type: webpage
+    url: https://ti.360.cn
+    enabled: true
+    weight: 1.0
+    category: vendor_threat_research
+    tier: A
+    priority: P0
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: ti360_anquanke
+    name: 360???APT????
+    type: webpage
+    url: https://www.anquanke.com/source/id/1697
+    enabled: true
+    weight: 1.0
+    category: news_media
+    tier: A
+    priority: P0
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: threatbook_ti
+    name: ????????
+    type: webpage
+    url: https://threatbook.cn/intelligence
+    enabled: true
+    weight: 1.0
+    category: vendor_threat_research
+    tier: A
+    priority: P0
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: antiy_labs
+    name: ????????
+    type: webpage
+    url: https://www.antiy.com/response
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    priority: P1
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: nsfocus_ti
+    name: ????????
+    type: webpage
+    url: https://www.nsfocus.com.cn/html/2021/153_0209/135.html
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: tencent_security
+    name: ????????
+    type: webpage
+    url: https://s.tencent.com/research/report
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: sangfor_security_lab
+    name: ????????
+    type: webpage
+    url: https://www.sangfor.com.cn/topic/security-lab
+    enabled: true
+    weight: 0.55
+    category: vendor_threat_research
+    tier: B
+    priority: P3
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: secrss_anquanke
+    name: ???? / ???
+    type: rss
+    url: https://www.secrss.com/rss.xml
+    enabled: true
+    weight: 0.9
+    category: news_media
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: positive_tech
+    name: Positive Technologies
+    type: rss
+    url: https://www.ptsecurity.com/rss/
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: bizone
+    name: BI.ZONE????
+    type: webpage
+    url: https://bi.zone/expertise/blog
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    priority: P1
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: solar_jsoc
+    name: ?????Solar JSOC
+    type: webpage
+    url: https://rt-solar.ru/en/analytics
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: cert_ua
+    name: ???CERT
+    type: rss
+    url: https://cert.gov.ua/rss
+    enabled: true
+    weight: 1.0
+    category: government
+    tier: A
+    priority: P0
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: group_ib
+    name: Group-IB??????
+    type: rss
+    url: https://www.group-ib.com/blog/feed.xml
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: incd_israel
+    name: ????????
+    type: webpage
+    url: https://www.gov.il/en/Departments/incd
+    enabled: true
+    weight: 0.9
+    category: government
+    tier: A
+    priority: P1
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: clearsky
+    name: ClearSky????
+    type: rss
+    url: https://www.clearskysec.com/feed/
+    enabled: true
+    weight: 1.0
+    category: vendor_threat_research
+    tier: A
+    priority: P0
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: checkpoint_cpr
+    name: Check Point????
+    type: rss
+    url: https://research.checkpoint.com/feed/
+    enabled: true
+    weight: 1.0
+    category: vendor_threat_research
+    tier: A
+    priority: P0
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: sygnia
+    name: Sygnia????
+    type: webpage
+    url: https://www.sygnia.co/resources
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: cybereason
+    name: Cybereason????
+    type: rss
+    url: https://www.cybereason.com/blog/rss.xml
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: intezer
+    name: Intezer???????
+    type: rss
+    url: https://intezer.com/feed/
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: ncsc_uk
+    name: ??????????
+    type: rss
+    url: https://www.ncsc.gov.uk/api/1/services/v1/report-rss-feed.xml
+    enabled: true
+    weight: 1.0
+    category: government
+    tier: A
+    priority: P0
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: bae_ctig
+    name: BAE??????
+    type: webpage
+    url: https://www.baesystems.com/en/cybersecurity/home
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    priority: P1
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: ncc_fox_it
+    name: NCC??/Fox-IT
+    type: rss
+    url: https://research.nccgroup.com/feed/
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: pwc_ti
+    name: ????????
+    type: webpage
+    url: https://www.pwc.com/gx/en/issues/cybersecurity/cyber-threat-intelligence.html
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: anssi_certfr
+    name: ???????????
+    type: rss
+    url: https://www.cert.ssi.gouv.fr/feed/
+    enabled: true
+    weight: 1.0
+    category: government
+    tier: A
+    priority: P0
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: sekoia
+    name: Sekoia??????
+    type: rss
+    url: https://blog.sekoia.io/feed/
+    enabled: true
+    weight: 0.9
+    category: vendor_threat_research
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: harfanglab
+    name: HarfangLab????
+    type: webpage
+    url: https://harfanglab.io/insidethelab
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: intrinsec_cert
+    name: Intrinsec????
+    type: rss
+    url: https://www.intrinsec.com/feed/
+    enabled: true
+    weight: 0.55
+    category: vendor_threat_research
+    tier: B
+    priority: P3
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: enisa
+    name: ???????
+    type: rss
+    url: https://www.enisa.europa.eu/media/rss/news-feed-rss.xml
+    enabled: true
+    weight: 0.9
+    category: government
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: bsi_germany
+    name: ???????????
+    type: rss
+    url: https://www.bsi.bund.de/rss/SiteGlobals/Functions/RSSFeed/EN/RSSNewsfeed_BSI_EN.xml
+    enabled: true
+    weight: 0.9
+    category: government
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: ncsc_nl
+    name: ??????????
+    type: webpage
+    url: https://www.ncsc.nl/english
+    enabled: true
+    weight: 0.9
+    category: government
+    tier: A
+    priority: P1
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: nukib_cz
+    name: ?????????
+    type: webpage
+    url: https://nukib.gov.cz/en
+    enabled: true
+    weight: 0.75
+    category: government
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: cert_pl
+    name: ??CERT
+    type: rss
+    url: https://cert.pl/en/rss
+    enabled: true
+    weight: 0.75
+    category: government
+    tier: B
+    priority: P2
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: jpcert
+    name: ??JPCERT/CC
+    type: rss
+    url: https://blogs.jpcert.or.jp/en/atom.xml
+    enabled: true
+    weight: 1.0
+    category: government
+    tier: A
+    priority: P0
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: ahnlab
+    name: ????ASEC??
+    type: rss
+    url: https://asec.ahnlab.com/en/feed/
+    enabled: true
+    weight: 1.0
+    category: vendor_threat_research
+    tier: A
+    priority: P0
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: kisa_kr
+    name: ????????
+    type: webpage
+    url: https://www.kisa.or.kr/en
+    enabled: true
+    weight: 0.9
+    category: government
+    tier: A
+    priority: P1
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: s2w_kr
+    name: S2W????
+    type: rss
+    url: https://blog.s2w.inc/feed
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: cert_in
+    name: ??CERT-In
+    type: webpage
+    url: https://www.cert-in.org.in
+    enabled: true
+    weight: 0.75
+    category: government
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: seqrite_quickheal
+    name: Seqrite???????
+    type: rss
+    url: https://www.seqrite.com/blog/feed/
+    enabled: true
+    weight: 0.75
+    category: vendor_threat_research
+    tier: B
+    priority: P2
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: acsc_au
+    name: ??????????
+    type: rss
+    url: https://www.cyber.gov.au/feed/
+    enabled: true
+    weight: 0.9
+    category: government
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: aptnotes
+    name: APT??PDF???
+    type: webpage
+    url: https://github.com/aptnotes/data
+    enabled: true
+    weight: 1.0
+    category: github_static
+    tier: A
+    priority: P0
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: apt_campaign_collection
+    name: APT??????
+    type: webpage
+    url: https://github.com/CyberMonitor/APT_CyberCriminal_Campagin_Collections
+    enabled: true
+    weight: 0.9
+    category: github_static
+    tier: A
+    priority: P1
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: etda_apt_sheet
+    name: APT?????
+    type: webpage
+    url: https://docs.google.com/spreadsheets/d/1H9_xaxQHpWaa4O_Son4Gx0YOIzlcBWMsdvePFX68EKU
+    enabled: true
+    weight: 1.0
+    category: github_static
+    tier: A
+    priority: P0
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: intelowl
+    name: IntelOwl????????
+    type: webpage
+    url: https://github.com/intelowlproject/IntelOwl
+    enabled: true
+    weight: 0.75
+    category: github_tool
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: deepdarkcti
+    name: ??/??CTI????
+    type: webpage
+    url: https://github.com/fastfire/deepdarkCTI
+    enabled: true
+    weight: 0.55
+    category: github_static
+    tier: B
+    priority: P3
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: the_record
+    name: The Record??
+    type: rss
+    url: https://therecord.media/feed/
+    enabled: true
+    weight: 0.9
+    category: news_media
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: bleeping_computer
+    name: BleepingComputer
+    type: rss
+    url: https://www.bleepingcomputer.com/feed/
+    enabled: true
+    weight: 0.9
+    category: news_media
+    tier: A
+    priority: P1
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: hackmageddon
+    name: Hackmageddon?????
+    type: webpage
+    url: https://hackmageddon.com
+    enabled: true
+    weight: 0.75
+    category: news_media
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: dark_reading
+    name: Dark Reading????
+    type: rss
+    url: https://www.darkreading.com/rss.xml
+    enabled: true
+    weight: 0.75
+    category: news_media
+    tier: B
+    priority: P2
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: krebs_on_security
+    name: Krebs????
+    type: rss
+    url: https://krebsonsecurity.com/feed/
+    enabled: true
+    weight: 0.75
+    category: news_media
+    tier: B
+    priority: P2
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: the_hacker_news
+    name: The Hacker News
+    type: rss
+    url: https://feeds.feedburner.com/TheHackersNews
+    enabled: true
+    weight: 0.75
+    category: news_media
+    tier: B
+    priority: P2
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: us_doj
+    name: ???????????
+    type: rss
+    url: https://www.justice.gov/feeds/opa/justice-news.xml
+    enabled: true
+    weight: 1.0
+    category: legal_government
+    tier: A
+    priority: P0
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: ofac_sanctions
+    name: ?????????
+    type: webpage
+    url: https://www.treasury.gov/ofac/downloads/sdn.xml
+    enabled: true
+    weight: 0.9
+    category: legal_government
+    tier: A
+    priority: P1
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: eu_sanctions
+    name: ????????
+    type: webpage
+    url: https://eur-lex.europa.eu
+    enabled: true
+    weight: 0.75
+    category: legal_government
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: cfr_tracker
+    name: ??????????????
+    type: webpage
+    url: https://www.cfr.org/cyber-operations
+    enabled: true
+    weight: 0.75
+    category: academic
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: csis_tracker
+    name: CSIS?????????
+    type: webpage
+    url: https://www.csis.org/programs/strategic-technologies-program/significant-cyber-incidents
+    enabled: true
+    weight: 0.75
+    category: academic
+    tier: B
+    priority: P2
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: arxiv_cr
+    name: arXiv????
+    type: rss
+    url: https://rss.arxiv.org/rss/cs.CR
+    enabled: true
+    weight: 0.55
+    category: academic
+    tier: B
+    priority: P3
+    max_items: 20
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: shadowserver
+    name: ????????
+    type: webpage
+    url: https://www.shadowserver.org
+    enabled: true
+    weight: 0.55
+    category: special
+    tier: B
+    priority: P3
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: contagio
+    name: Contagio?????
+    type: webpage
+    url: https://contagiodump.blogspot.com
+    enabled: true
+    weight: 0.55
+    category: special
+    tier: B
+    priority: P3
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: internet_archive
+    name: ?????
+    type: api_json
+    url: https://archive.org/wayback/available
+    enabled: true
+    weight: 0.55
+    category: special
+    tier: B
+    priority: P3
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
+
+  - id: telegram_cti_channels
+    name: Telegram??????
+    type: webpage
+    url: https://t.me
+    enabled: true
+    weight: 0.55
+    category: social_media
+    tier: B
+    priority: P3
+    max_items: 1
+    fetch_full_article: true
+    keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]

@@ -1,0 +1,1 @@
+MuddyWater（APT34）是与伊朗情报与安全部（MOIS）相关联的威胁组织，也被称为Seedworm。该组织至少自2026年2月初以来，就活跃于美国和以色列的网络中。其攻击目标包括银行、机场、非政府组织以及一家美国公司的以色列分支机构。在活动中，该组织使用了名为Dindoor和Fakeset的恶意软件。Dindoor是一种通过JavaScript运行时Deno执行的后门，而Fakeset是一种基于Python的恶意软件，从Backblaze云存储中获取。这些恶意软件均使用“Amy Cherne”证书签名，Fakeset还使用了“Donald Gay”证书。

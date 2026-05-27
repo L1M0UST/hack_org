@@ -1,0 +1,8 @@
+storage:
+  backend: local
+  minio:
+    endpoint_env: MINIO_ENDPOINT
+    access_key_env: MINIO_ACCESS_KEY
+    secret_key_env: MINIO_SECRET_KEY
+    bucket_env: MINIO_BUCKET
+    secure_env: MINIO_SECURE

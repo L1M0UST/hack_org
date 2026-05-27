@@ -1,0 +1,28 @@
+{
+  "facts": [
+    {
+      "fact_type": "malware",
+      "fact_value": "Dindoor",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "Fakeset",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_country",
+      "fact_value": "美国、以色列",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_sector",
+      "fact_value": "银行、机场、非政府组织、软件公司",
+      "confidence": 0.9,
+      "current_best": true
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "facts": [
+    {
+      "fact_type": "attack_pattern",
+      "fact_value": "利用AnySign4PC漏洞",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "attack_pattern",
+      "fact_value": "社会工程学活动，利用伪造的工作机会投递远程访问木马",
+      "confidence": 0.9,
+      "current_best": false
+    },
+    {
+      "fact_type": "attack_type",
+      "fact_value": "加密货币盗窃",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "attack_type",
+      "fact_value": "水坑攻击",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "attack_type",
+      "fact_value": "社会工程学",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "BeaverTail",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "InvisibleFerret",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "suspected_source",
+      "fact_value": "North Korea",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_country",
+      "fact_value": "欧洲国防部门公司",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_country",
+      "fact_value": "韩国",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_sector",
+      "fact_value": "国防",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_sector",
+      "fact_value": "金融（加密货币交易所）",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_sector",
+      "fact_value": "金融",
+      "confidence": 0.85,
+      "current_best": false
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "facts": [
+    {
+      "fact_type": "attack_pattern",
+      "fact_value": "滥用合法服务（Git, Statcounter, GitHub）进行命令与控制及载荷分发",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "attack_type",
+      "fact_value": "鱼叉式网络钓鱼",
+      "confidence": 0.95,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "SpyGlace",
+      "confidence": 0.95,
+      "current_best": true
+    },
+    {
+      "fact_type": "tactic",
+      "fact_value": "利用COM劫持实现持久化",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_country",
+      "fact_value": "日本",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_sector",
+      "fact_value": "人力资源",
+      "confidence": 0.9,
+      "current_best": true
+    }
+  ]
+}

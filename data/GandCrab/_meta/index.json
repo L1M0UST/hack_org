@@ -1,0 +1,17 @@
+{
+  "updated_at": "2026-05-14T04:24:07.677183+00:00",
+  "files": [
+    "_meta\\fingerprints.json",
+    "_meta\\index.json",
+    "_meta\\run_log.jsonl",
+    "_meta\\sources.json",
+    "基本情况\\aliases.json",
+    "基本情况\\overview.md",
+    "基本情况\\targets.json",
+    "基本情况\\ttps.md",
+    "活动时间\\2026-05-12_State_of_ransomware_in_2026.md",
+    "组织架构\\members.json",
+    "组织架构\\org_links.md",
+    "组织架构\\subgroups.json"
+  ]
+}

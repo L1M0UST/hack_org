@@ -1,0 +1,8 @@
+database:
+  driver: postgresql
+  host_env: PGHOST
+  port_env: PGPORT
+  database_env: PGDATABASE
+  user_env: PGUSER
+  password_env: PGPASSWORD
+  sslmode_env: PGSSLMODE

@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hack-org.local/schemas/group_profile_synthesis.schema.json",
+  "title": "GroupProfileSynthesisResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "task_type",
+    "group_id",
+    "canonical_name",
+    "latest_overview",
+    "selected_fact_ids",
+    "current_best_updates",
+    "conflicts"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "task_type": { "const": "group_profile_synthesis" },
+    "group_id": { "type": "string" },
+    "canonical_name": { "type": "string" },
+    "latest_overview": { "type": "string" },
+    "selected_fact_ids": { "type": "array", "items": { "type": "string" } },
+    "current_best_updates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["fact_type", "fact_id", "reason"],
+        "properties": {
+          "fact_type": { "type": "string" },
+          "fact_id": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["field", "values", "resolution"],
+        "properties": {
+          "field": { "type": "string" },
+          "values": { "type": "array", "items": { "type": "string" } },
+          "resolution": { "type": "string" }
+        }
+      }
+    }
+  }
+}

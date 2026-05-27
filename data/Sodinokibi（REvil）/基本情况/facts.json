@@ -1,0 +1,40 @@
+{
+  "facts": [
+    {
+      "fact_type": "attack_pattern",
+      "fact_value": "双重勒索",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "REvil",
+      "confidence": 1.0,
+      "current_best": true
+    },
+    {
+      "fact_type": "suspected_source",
+      "fact_value": "Russia",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "tactic",
+      "fact_value": "UNKN操作员身份被德国BKA揭露",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_country",
+      "fact_value": "德国",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "victim_org",
+      "fact_value": "Kaseya",
+      "confidence": 0.9,
+      "current_best": true
+    }
+  ]
+}

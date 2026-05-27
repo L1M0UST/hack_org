@@ -1,0 +1,40 @@
+{
+  "facts": [
+    {
+      "fact_type": "attack_pattern",
+      "fact_value": "社会工程学",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "attack_pattern",
+      "fact_value": "ClickFix",
+      "confidence": 0.8,
+      "current_best": false
+    },
+    {
+      "fact_type": "attack_type",
+      "fact_value": "信息窃取",
+      "confidence": 0.95,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "SHub Reaper",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "tactic",
+      "fact_value": "利用系统自身资源（LotL）",
+      "confidence": 0.85,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_sector",
+      "fact_value": "macOS 用户",
+      "confidence": 0.9,
+      "current_best": true
+    }
+  ]
+}

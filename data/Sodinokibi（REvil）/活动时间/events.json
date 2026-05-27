@@ -1,0 +1,20 @@
+{
+  "events": [
+    {
+      "event_date": "2021-07-04",
+      "date_precision": "day",
+      "event_type": "intrusion",
+      "title": "REvil攻击Kaseya公司",
+      "summary": "REvil在2021年7月4日周末入侵并勒索了为1500多家企业、非营利组织和政府机构处理IT运营的Kaseya公司。",
+      "confidence": 0.9
+    },
+    {
+      "event_date": null,
+      "date_precision": "unknown",
+      "event_type": "disclosure",
+      "title": "德国BKA揭露REvil和GandCrab操作员UNKN身份",
+      "summary": "德国联邦刑事警察局（BKA）揭露了REvil和GandCrab勒索软件操作员“UNKN”的身份。",
+      "confidence": 0.9
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "facts": [
+    {
+      "fact_type": "attack_type",
+      "fact_value": "网络钓鱼",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_sector",
+      "fact_value": "智库",
+      "confidence": 0.9,
+      "current_best": true
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "events": [
+    {
+      "event_date": null,
+      "date_precision": "unknown",
+      "event_type": "disclosure",
+      "title": "ALPHV/BlackCat勒索软件组织谈判代表认罪",
+      "summary": "ALPHV/BlackCat勒索软件组织的一名谈判代表认罪。",
+      "confidence": 0.9
+    }
+  ]
+}

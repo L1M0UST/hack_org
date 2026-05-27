@@ -1,0 +1,79 @@
+{
+  "schema_version": "1.0",
+  "task_type": "article_extract",
+  "document_id": "00000000-0000-0000-0000-000000000001",
+  "processing_result": {
+    "is_relevant": true,
+    "document_summary": "APT28 targeted government entities using spear phishing.",
+    "language": "en",
+    "discard_reason": null
+  },
+  "matched_groups": [
+    {
+      "group_id": "00000000-0000-0000-0000-000000000002",
+      "canonical_name": "APT28",
+      "match_confidence": 0.96,
+      "match_reasons": ["explicit mention in title"]
+    }
+  ],
+  "basic_profile_updates": [
+    {
+      "group_id": "00000000-0000-0000-0000-000000000002",
+      "fact_type": "attack_pattern",
+      "fact_value": "spear phishing",
+      "normalized_value": "spear phishing",
+      "confidence": 0.95,
+      "evidence_text": "APT28 used spear phishing emails against government entities.",
+      "source_url": "https://example.com/report",
+      "source_title": "Example report",
+      "published_at": "2026-05-15T00:00:00Z"
+    }
+  ],
+  "organization_structure_updates": {
+    "relations": [],
+    "members": []
+  },
+  "activity_events": [
+    {
+      "group_id": "00000000-0000-0000-0000-000000000002",
+      "event_date": "2026-05-15",
+      "date_precision": "day",
+      "event_type": "campaign",
+      "title": "APT28 targeted government entities",
+      "summary": "APT28 targeted government entities using spear phishing.",
+      "targets": {
+        "countries": ["Germany"],
+        "sectors": ["government"],
+        "organizations": []
+      },
+      "techniques": ["spear phishing"],
+      "malware": [],
+      "vulnerabilities": [],
+      "iocs": {
+        "domains": [],
+        "ips": [],
+        "urls": [],
+        "hashes": []
+      },
+      "confidence": 0.95,
+      "evidence_texts": ["APT28 used spear phishing emails against government entities."]
+    }
+  ],
+  "alias_evidence": [],
+  "apt_table_candidates": [
+    {
+      "group_id": "00000000-0000-0000-0000-000000000002",
+      "apt_organization": "APT28",
+      "attack_type": ["cyber espionage"],
+      "technical_skills": ["spear phishing"],
+      "suspected_source": ["Russia"],
+      "affected_industry": ["government"],
+      "alias": ["Fancy Bear"],
+      "attack_pattern": ["spear phishing"],
+      "target_country": ["Germany"],
+      "common_language": [],
+      "tactics": ["initial access"]
+    }
+  ],
+  "discarded_claims": []
+}

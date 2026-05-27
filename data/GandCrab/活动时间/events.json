@@ -1,0 +1,12 @@
+{
+  "events": [
+    {
+      "event_date": "2019-05-31",
+      "date_precision": "day",
+      "event_type": "disclosure",
+      "title": "GandCrab组织宣布关闭",
+      "summary": "GandCrab团队宣布关闭，在勒索受害者超过20亿美元后退出。",
+      "confidence": 0.9
+    }
+  ]
+}

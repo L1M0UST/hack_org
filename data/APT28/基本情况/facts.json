@@ -1,0 +1,82 @@
+{
+  "facts": [
+    {
+      "fact_type": "attack_pattern",
+      "fact_value": "利用路由器漏洞进行DNS劫持和AiTM攻击",
+      "confidence": 1.0,
+      "current_best": true
+    },
+    {
+      "fact_type": "attack_pattern",
+      "fact_value": "“Operation Neusploit”多阶段感染链，投递恶意后门",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "attack_pattern",
+      "fact_value": "利用Roundcube-RDP-edge设备漏洞",
+      "confidence": 0.8,
+      "current_best": true
+    },
+    {
+      "fact_type": "attack_type",
+      "fact_value": "DNS劫持",
+      "confidence": 1.0,
+      "current_best": true
+    },
+    {
+      "fact_type": "attack_type",
+      "fact_value": "间谍破坏",
+      "confidence": 0.85,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "Wiper-OT modules",
+      "confidence": 0.8,
+      "current_best": true
+    },
+    {
+      "fact_type": "tactic",
+      "fact_value": "中间人攻击（AiTM）",
+      "confidence": 1.0,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_country",
+      "fact_value": "中东欧国家",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "target_country",
+      "fact_value": "国家关键基础设施",
+      "confidence": 0.8,
+      "current_best": false
+    },
+    {
+      "fact_type": "target_country",
+      "fact_value": "美国",
+      "confidence": 0.8,
+      "current_best": false
+    },
+    {
+      "fact_type": "target_sector",
+      "fact_value": "政府机构",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "technical_skill",
+      "fact_value": "利用已知漏洞修改DNS设置，无需部署恶意软件",
+      "confidence": 1.0,
+      "current_best": true
+    },
+    {
+      "fact_type": "victim_org",
+      "fact_value": "超过200个组织，包括政府外交部、执法部门和第三方电子邮件提供商",
+      "confidence": 0.9,
+      "current_best": true
+    }
+  ]
+}

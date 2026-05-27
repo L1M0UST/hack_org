@@ -1,0 +1,10 @@
+{
+  "facts": [
+    {
+      "fact_type": "malware",
+      "fact_value": "Cicada3301",
+      "confidence": 0.8,
+      "current_best": true
+    }
+  ]
+}

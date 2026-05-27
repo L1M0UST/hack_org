@@ -1,0 +1,23 @@
+{
+  "urls": {
+    "1a2734cd98a4337e2d9be63b4431baab05e03a25608fc3c7b86a0f5e951b824f": "https://attack.mitre.org/groups/",
+    "75f4284f60ec705a45fb19d7fafe57015364b43b6e50fd49806e26511f4d19e2": "https://securelist.com/state-of-ransomware-in-2026/119761/",
+    "363b5076c19e25f83d19445c6c54abc402a9215944bec5e90d9c48a3356c6bce": "https://www.microsoft.com/en-us/security/blog/2026/05/12/accelerating-detection-engineering-using-ai-assisted-synthetic-attack-logs-generation/",
+    "251695d88d7c8dcafedd12213d366aadaa33cebb214d5807f2f0071138a5cb43": "https://unit42.paloaltonetworks.com/active-directory-certificate-services-exploitation/",
+    "9ca9b26be0b23bbc29033879ace9c6e7ccb27ac55509c9040e916c2775646f45": "https://www.cisa.gov/news-events/ics-advisories/icsa-26-132-05"
+  },
+  "titles": {
+    "fe44faaf016f2898d37cbbed785cbb37a114ae8ffb1a3f35f4c760d65984bd6a": "MITRE ATT&CK Groups",
+    "c6aa928ef26f4ad7145aec65ea61ee83505565e8fd99feaabb15da23f73dda59": "State of ransomware in 2026",
+    "a754b06b4c30e5a91ee7953af8b90576bd5f23e9e55afe5d360da88ae24361dc": "Accelerating detection engineering using AI-assisted synthetic attack logs generation",
+    "c34896227d4ceec33b8517bce766a8754e68203eaa74209dae7c64851dd7db1d": "Inside AD CS Escalation: Unpacking Advanced Misuse Techniques and Tools",
+    "b332558062bf98f0842fc0d3ad371f07410edca50d11bfd63a14b45680404330": "ABB AC500 V3 Stack Buffer Overflow in Cryptographic Message Syntax"
+  },
+  "texts": {
+    "34ca074e19f69f36c3a0ee5658d26840a3dff14781e26ce5d043eea20b176619": "E:\\code\\py\\hack_org\\.state\\raw\\mitre_attack_groups\\1a2734cd98a4337e\\clean.txt",
+    "bce2ba4499c4fc6c36f31624fdc3bb752638267ce06a840eb258e0eb05a64f33": "E:\\code\\py\\hack_org\\.state\\raw\\kaspersky_securelist\\75f4284f60ec705a\\clean.txt",
+    "a709a0dacef51ea96fb9ed0fc1679e7622fdb66cd8f90803e72d382e35e11ada": "E:\\code\\py\\hack_org\\.state\\raw\\microsoft_security\\363b5076c19e25f8\\clean.txt",
+    "7c40e1e95734297ed75514c5c3c3ec2ee5eb6fb8bbd6a445d8a22bdfb490981a": "E:\\code\\py\\hack_org\\.state\\raw\\unit42\\251695d88d7c8dca\\clean.txt",
+    "e6ca6e831ff4742bf8da0212d416ec967847cac7d0bc126ba1c48236ba6fc302": "E:\\code\\py\\hack_org\\.state\\raw\\cisa_alerts\\9ca9b26be0b23bbc\\clean.txt"
+  }
+}

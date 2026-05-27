@@ -1,0 +1,12 @@
+{
+  "events": [
+    {
+      "event_date": "2022-07-01",
+      "date_precision": "month",
+      "event_type": "other",
+      "title": "KillNet claims DDoS attacks on Lithuania's infrastructure",
+      "summary": "Hackers targeted Lithuania's state railway, airports, media companies, and government ministries with DDoS attacks. The KillNet group, a Russian-backed hacking group, claimed responsibility.",
+      "confidence": 0.9
+    }
+  ]
+}

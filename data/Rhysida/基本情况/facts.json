@@ -1,0 +1,16 @@
+{
+  "facts": [
+    {
+      "fact_type": "attack_type",
+      "fact_value": "勒索软件",
+      "confidence": 0.9,
+      "current_best": true
+    },
+    {
+      "fact_type": "malware",
+      "fact_value": "Rhysida",
+      "confidence": 0.9,
+      "current_best": true
+    }
+  ]
+}

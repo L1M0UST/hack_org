@@ -1,0 +1,1 @@
+APT28（又称Forest Blizzard）是俄罗斯军事情报单位（GRU）下属的威胁组织。该组织长期针对政府、执法部门及关键基础设施进行间谍与破坏活动。其主要攻击手段包括利用路由器漏洞实施DNS劫持和中间人攻击（AiTM），以窃取Microsoft Outlook Web等服务的认证令牌。在“Operation Neusploit”行动中，该组织通过多阶段感染链对中东欧地区目标投递恶意后门。此外，该组织也被发现利用Roundcube及边缘设备漏洞，并部署Wiper-OT模块，威胁国家关键基础设施。

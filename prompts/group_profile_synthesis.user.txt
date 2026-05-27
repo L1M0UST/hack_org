@@ -1,0 +1,18 @@
+TASK
+Synthesize the current basic profile for one threat group using policy B.
+
+GROUP
+{{group_json}}
+
+CURRENT FACTS
+{{facts_json}}
+
+FACT EVIDENCE SUMMARIES
+{{fact_evidence_json}}
+
+PREVIOUS OVERVIEW
+{{previous_overview_json}}
+
+OUTPUT REQUIREMENTS
+- Return one JSON object matching the group_profile_synthesis schema exactly.
+- selected_fact_ids and current_best_updates must reference IDs present in CURRENT FACTS.

@@ -1,0 +1,21 @@
+TASK
+Synthesize the current organization-structure profile for one threat group using policy B.
+
+GROUP
+{{group_json}}
+
+RELATIONS
+{{relations_json}}
+
+MEMBERS
+{{members_json}}
+
+EVIDENCE SUMMARIES
+{{structure_evidence_json}}
+
+PREVIOUS STRUCTURE OVERVIEW
+{{previous_structure_overview_json}}
+
+OUTPUT REQUIREMENTS
+- Return one JSON object matching the group_structure_synthesis schema exactly.
+- selected_relation_ids and selected_member_ids must reference IDs present in the supplied input.

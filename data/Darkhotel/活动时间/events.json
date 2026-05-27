@@ -1,0 +1,20 @@
+{
+  "events": [
+    {
+      "event_date": "2025-06-01",
+      "date_precision": "month",
+      "event_type": "campaign",
+      "title": "APT-C-60针对日本的持续钓鱼攻击活动（2025年6月-8月）",
+      "summary": "JPCERT/CC观察到APT-C-60在2025年6月至8月期间继续对日本发起攻击。攻击者通过伪装为求职者的鱼叉式网络钓鱼邮件针对招聘人员，分发包含恶意VHDX文件的邮件。感染链涉及利用Git执行恶意脚本，最终部署更新版的Downloader和SpyGlace后门。",
+      "confidence": 0.95
+    },
+    {
+      "event_date": null,
+      "date_precision": "unknown",
+      "event_type": "intrusion",
+      "title": "使用 CrossC2 和 ReadNimeLoader 的攻击活动",
+      "summary": "攻击者使用 CrossC2 扩展工具创建适用于 Linux 和 macOS 的 Cobalt Strike Beacon，并部署自定义加载器 ReadNimeLoader 用于在 Windows 系统上加载 OdinLdr 和 Cobalt Strike Beacon。攻击旨在渗透 Active Directory 环境。",
+      "confidence": 0.8
+    }
+  ]
+}

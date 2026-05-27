@@ -1,0 +1,14 @@
+{
+  "urls": {
+    "1a2734cd98a4337e2d9be63b4431baab05e03a25608fc3c7b86a0f5e951b824f": "https://attack.mitre.org/groups/",
+    "75f4284f60ec705a45fb19d7fafe57015364b43b6e50fd49806e26511f4d19e2": "https://securelist.com/state-of-ransomware-in-2026/119761/"
+  },
+  "titles": {
+    "fe44faaf016f2898d37cbbed785cbb37a114ae8ffb1a3f35f4c760d65984bd6a": "MITRE ATT&CK Groups",
+    "c6aa928ef26f4ad7145aec65ea61ee83505565e8fd99feaabb15da23f73dda59": "State of ransomware in 2026"
+  },
+  "texts": {
+    "34ca074e19f69f36c3a0ee5658d26840a3dff14781e26ce5d043eea20b176619": "E:\\code\\py\\hack_org\\.state\\raw\\mitre_attack_groups\\1a2734cd98a4337e\\clean.txt",
+    "bce2ba4499c4fc6c36f31624fdc3bb752638267ce06a840eb258e0eb05a64f33": "E:\\code\\py\\hack_org\\.state\\raw\\kaspersky_securelist\\75f4284f60ec705a\\clean.txt"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "sources": [
+    {
+      "source_title": "MITRE ATT&CK Groups",
+      "source_url": "https://attack.mitre.org/groups/",
+      "source_domain": "attack.mitre.org",
+      "published_at": null,
+      "collected_at": "2026-05-13T09:54:08.592456+00:00",
+      "confidence": 0.6,
+      "reasons": [
+        "body repeated matches: APT28",
+        "high fuzzy match: 100",
+        "supporting entities found"
+      ]
+    }
+  ]
+}
