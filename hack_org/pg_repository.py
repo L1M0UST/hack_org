@@ -133,7 +133,7 @@ class PostgresRepository:
                 CREATE TABLE IF NOT EXISTS group_activity_timeline (
                     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                     group_id UUID NOT NULL REFERENCES threat_groups(id) ON DELETE CASCADE,
-                    event_id UUID REFERENCES activity_events(id) ON DELETE SET NULL,
+                    event_id UUID,
                     document_id UUID REFERENCES collected_documents(id) ON DELETE SET NULL,
                     event_date DATE,
                     date_precision TEXT NOT NULL DEFAULT 'unknown',
@@ -789,8 +789,14 @@ class PostgresRepository:
                 f"""
                 SELECT row_to_json(t)
                 FROM (
-                  SELECT * FROM {table}
-                  ORDER BY created_at DESC
+                  SELECT
+                    tg.canonical_name AS apt_organization,
+                    tg.organization_code,
+                    tg.display_name AS team_name,
+                    l.*
+                  FROM {table} l
+                  JOIN threat_groups tg ON tg.id = l.group_id
+                  ORDER BY l.created_at DESC
                   LIMIT %s
                 ) t
                 """,
