@@ -113,8 +113,17 @@ CREATE TABLE IF NOT EXISTS group_structure_events (
     source_published_at TIMESTAMPTZ,
     valid_time TEXT,
     collected_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    UNIQUE (group_id, document_id, structure_type, COALESCE(target_name, ''), COALESCE(member_name, ''), evidence_text)
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_group_structure_events_dedupe
+ON group_structure_events (
+    group_id,
+    document_id,
+    structure_type,
+    COALESCE(target_name, ''),
+    COALESCE(member_name, ''),
+    evidence_text
 );
 
 CREATE TABLE IF NOT EXISTS group_activity_timeline (
@@ -138,8 +147,16 @@ CREATE TABLE IF NOT EXISTS group_activity_timeline (
     source_title TEXT,
     source_published_at TIMESTAMPTZ,
     collected_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    UNIQUE (group_id, document_id, event_type, title, COALESCE(event_date::TEXT, ''))
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS ux_group_activity_timeline_dedupe
+ON group_activity_timeline (
+    group_id,
+    document_id,
+    event_type,
+    title,
+    COALESCE(event_date, DATE '0001-01-01')
 );
 
 CREATE TABLE IF NOT EXISTS apt_group_export (
