@@ -508,7 +508,7 @@ class PostgresRepository:
             return str(cur.fetchone()[0])
 
     def group_context_by_organization_codes(self, organization_codes: list[str]) -> dict[str, dict[str, Any]]:
-        """Load synthesis context for local stable group ids."""
+        """Load synthesis context for local stable group ids from append-only ledgers."""
 
         if not organization_codes:
             return {}
@@ -537,6 +537,7 @@ class PostgresRepository:
             if not groups:
                 return {}
             pg_ids = [group["group_id"] for group in groups.values()]
+            by_pg_id = {group["group_id"]: group for group in groups.values()}
             cur.execute(
                 """
                 SELECT group_id, alias
@@ -546,34 +547,35 @@ class PostgresRepository:
                 """,
                 (pg_ids,),
             )
-            by_pg_id = {group["group_id"]: group for group in groups.values()}
             for group_id, alias in cur.fetchall():
                 by_pg_id[str(group_id)]["known_aliases"].append(alias)
             cur.execute(
                 """
-                SELECT id, group_id, fact_type, fact_value, confidence, current_best
-                FROM group_facts
-                WHERE group_id = ANY(%s) AND is_current = TRUE
-                ORDER BY current_best DESC, confidence DESC, updated_at DESC
+                SELECT id, group_id, fact_type, fact_value, normalized_value, confidence
+                FROM group_fact_events
+                WHERE group_id = ANY(%s)
+                ORDER BY confidence DESC, collected_at DESC
+                LIMIT 500
                 """,
                 (pg_ids,),
             )
-            for fact_id, group_id, fact_type, fact_value, confidence, current_best in cur.fetchall():
+            for fact_id, group_id, fact_type, fact_value, normalized_value, confidence in cur.fetchall():
                 by_pg_id[str(group_id)]["known_facts"].append(
                     {
                         "fact_id": str(fact_id),
                         "fact_type": fact_type,
-                        "fact_value": fact_value,
+                        "fact_value": normalized_value or fact_value,
                         "confidence": float(confidence),
-                        "current_best": current_best,
+                        "current_best": False,
                     }
                 )
             cur.execute(
                 """
-                SELECT source_group_id, relation_type, target_name, confidence
-                FROM group_relations
-                WHERE source_group_id = ANY(%s) AND is_current = TRUE
-                ORDER BY confidence DESC, updated_at DESC
+                SELECT group_id, relation_type, target_name, confidence
+                FROM group_structure_events
+                WHERE group_id = ANY(%s) AND structure_type = 'relation'
+                ORDER BY confidence DESC, collected_at DESC
+                LIMIT 300
                 """,
                 (pg_ids,),
             )
@@ -613,54 +615,46 @@ class PostgresRepository:
         }
 
     def profile_synthesis_input(self, organization_code: str) -> dict[str, Any]:
-        """Build prompt variables for basic-profile synthesis."""
+        """Build prompt variables for basic-profile synthesis from fact ledger rows."""
 
         group = self.group_by_organization_code(organization_code)
         with self.conn.cursor() as cur:
             cur.execute(
                 """
                 SELECT id, fact_type, fact_value, normalized_value, confidence,
-                       source_count, is_current, current_best
-                FROM group_facts
-                WHERE group_id = %s AND is_current = TRUE
-                ORDER BY fact_type, current_best DESC, confidence DESC, updated_at DESC
+                       evidence_text, source_url, source_title, source_published_at
+                FROM group_fact_events
+                WHERE group_id = %s
+                ORDER BY fact_type, confidence DESC, collected_at DESC
+                LIMIT 500
                 """,
                 (group["group_id"],),
             )
-            facts = [
-                {
-                    "fact_id": str(row[0]),
-                    "fact_type": row[1],
-                    "fact_value": row[2],
-                    "normalized_value": row[3],
-                    "confidence": float(row[4]),
-                    "source_count": row[5],
-                    "is_current": row[6],
-                    "current_best": row[7],
-                }
-                for row in cur.fetchall()
-            ]
-            fact_ids = [fact["fact_id"] for fact in facts]
-            cur.execute(
-                """
-                SELECT fact_id, evidence_text, source_url, source_title, published_at, confidence
-                FROM fact_evidence
-                WHERE fact_id = ANY(%s)
-                ORDER BY created_at DESC
-                """,
-                (fact_ids,),
-            )
+            facts = []
             evidence: dict[str, list[dict[str, Any]]] = {}
-            for fact_id, text, url, title, published_at, confidence in cur.fetchall():
-                evidence.setdefault(str(fact_id), []).append(
+            for row in cur.fetchall():
+                fact_id = str(row[0])
+                facts.append(
                     {
-                        "evidence_text": text,
-                        "source_url": url,
-                        "source_title": title,
-                        "published_at": published_at.isoformat() if published_at else None,
-                        "confidence": float(confidence),
+                        "fact_id": fact_id,
+                        "fact_type": row[1],
+                        "fact_value": row[2],
+                        "normalized_value": row[3],
+                        "confidence": float(row[4]),
+                        "source_count": 1,
+                        "is_current": True,
+                        "current_best": False,
                     }
                 )
+                evidence[fact_id] = [
+                    {
+                        "evidence_text": row[5],
+                        "source_url": row[6],
+                        "source_title": row[7],
+                        "published_at": row[8].isoformat() if row[8] else None,
+                        "confidence": float(row[4]),
+                    }
+                ]
         return {
             "group_json": group,
             "facts_json": facts,
@@ -669,16 +663,17 @@ class PostgresRepository:
         }
 
     def structure_synthesis_input(self, organization_code: str) -> dict[str, Any]:
-        """Build prompt variables for organization-structure synthesis."""
+        """Build prompt variables for organization-structure synthesis from structure ledger rows."""
 
         group = self.group_by_organization_code(organization_code)
         with self.conn.cursor() as cur:
             cur.execute(
                 """
-                SELECT id, relation_type, target_name, confidence, is_current
-                FROM group_relations
-                WHERE source_group_id = %s AND is_current = TRUE
-                ORDER BY confidence DESC, updated_at DESC
+                SELECT id, relation_type, target_name, confidence, evidence_text
+                FROM group_structure_events
+                WHERE group_id = %s AND structure_type = 'relation'
+                ORDER BY confidence DESC, collected_at DESC
+                LIMIT 300
                 """,
                 (group["group_id"],),
             )
@@ -688,50 +683,46 @@ class PostgresRepository:
                     "relation_type": row[1],
                     "target_name": row[2],
                     "confidence": float(row[3]),
-                    "is_current": row[4],
+                    "is_current": True,
                 }
                 for row in cur.fetchall()
             ]
             cur.execute(
                 """
-                SELECT id, member_name, role, confidence, is_current
-                FROM group_members
-                WHERE group_id = %s AND is_current = TRUE
-                ORDER BY confidence DESC, updated_at DESC
+                SELECT id, member_name, role, confidence, evidence_text
+                FROM group_structure_events
+                WHERE group_id = %s AND structure_type = 'member'
+                ORDER BY confidence DESC, collected_at DESC
+                LIMIT 300
                 """,
                 (group["group_id"],),
             )
-            members = [
-                {
-                    "member_id": str(row[0]),
-                    "member_name": row[1],
-                    "role": row[2],
-                    "confidence": float(row[3]),
-                    "is_current": row[4],
-                }
-                for row in cur.fetchall()
-            ]
-            relation_ids = [item["relation_id"] for item in relations]
-            member_ids = [item["member_id"] for item in members]
-            cur.execute(
-                """
-                SELECT relation_id, member_id, evidence_text, confidence
-                FROM structure_evidence
-                WHERE relation_id = ANY(%s) OR member_id = ANY(%s)
-                ORDER BY created_at DESC
-                """,
-                (relation_ids, member_ids),
-            )
+            members = []
             evidence = []
-            for relation_id, member_id, text, confidence in cur.fetchall():
-                evidence.append(
+            for row in cur.fetchall():
+                member_id = str(row[0])
+                members.append(
                     {
-                        "relation_id": str(relation_id) if relation_id else None,
-                        "member_id": str(member_id) if member_id else None,
-                        "evidence_text": text,
-                        "confidence": float(confidence),
+                        "member_id": member_id,
+                        "member_name": row[1],
+                        "role": row[2],
+                        "confidence": float(row[3]),
+                        "is_current": True,
                     }
                 )
+                evidence.append({"member_id": member_id, "relation_id": None, "evidence_text": row[4], "confidence": float(row[3])})
+            cur.execute(
+                """
+                SELECT id, evidence_text, confidence
+                FROM group_structure_events
+                WHERE group_id = %s AND structure_type = 'relation'
+                ORDER BY confidence DESC, collected_at DESC
+                LIMIT 300
+                """,
+                (group["group_id"],),
+            )
+            for row in cur.fetchall():
+                evidence.append({"relation_id": str(row[0]), "member_id": None, "evidence_text": row[1], "confidence": float(row[2])})
         return {
             "group_json": group,
             "relations_json": relations,
@@ -741,31 +732,22 @@ class PostgresRepository:
         }
 
     def export_synthesis_input(self, organization_code: str) -> dict[str, Any]:
-        """Build prompt variables for apt_group_export synthesis."""
+        """Build prompt variables for apt_group_export synthesis from ledgers."""
 
         group = self.group_by_organization_code(organization_code)
         with self.conn.cursor() as cur:
             cur.execute(
                 """
-                SELECT fact_type, fact_value, confidence, current_best
-                FROM group_facts
+                SELECT fact_type, COALESCE(NULLIF(normalized_value, ''), fact_value) AS value, confidence
+                FROM group_fact_events
                 WHERE group_id = %s
-                  AND is_current = TRUE
-                  AND (
-                    current_best = TRUE
-                    OR fact_type NOT IN ('suspected_source', 'common_language')
-                  )
-                ORDER BY fact_type, current_best DESC, confidence DESC
+                ORDER BY fact_type, confidence DESC, collected_at DESC
+                LIMIT 500
                 """,
                 (group["group_id"],),
             )
             current_best_facts = [
-                {
-                    "fact_type": row[0],
-                    "fact_value": row[1],
-                    "confidence": float(row[2]),
-                    "current_best": row[3],
-                }
+                {"fact_type": row[0], "fact_value": row[1], "confidence": float(row[2]), "current_best": False}
                 for row in cur.fetchall()
             ]
             cur.execute(
@@ -780,11 +762,10 @@ class PostgresRepository:
             aliases = [row[0] for row in cur.fetchall()]
             cur.execute(
                 """
-                SELECT e.event_date, e.event_type, e.title, e.summary, e.confidence
-                FROM activity_events e
-                JOIN event_groups eg ON eg.event_id = e.id
-                WHERE eg.group_id = %s
-                ORDER BY e.event_date DESC NULLS LAST, e.created_at DESC
+                SELECT event_date, event_type, title, summary, confidence
+                FROM group_activity_timeline
+                WHERE group_id = %s
+                ORDER BY event_date DESC NULLS LAST, created_at DESC
                 LIMIT 20
                 """,
                 (group["group_id"],),
@@ -921,7 +902,7 @@ class PostgresRepository:
         return result
 
     def group_archive_snapshots(self) -> list[dict[str, Any]]:
-        """Return normalized archive-ready snapshots for every PostgreSQL group."""
+        """Return normalized archive-ready snapshots for every PostgreSQL group from append-only ledgers."""
 
         with self.conn.cursor() as cur:
             cur.execute(
@@ -948,6 +929,8 @@ class PostgresRepository:
             ]
             by_id = {group["group_id"]: group for group in groups}
             pg_ids = list(by_id)
+            if not pg_ids:
+                return groups
             cur.execute(
                 """
                 SELECT group_id, alias
@@ -962,64 +945,49 @@ class PostgresRepository:
                 by_id[str(group_id)]["aliases"].append(alias)
             cur.execute(
                 """
-                SELECT group_id, fact_type, fact_value, confidence, current_best
-                FROM group_facts
-                WHERE group_id = ANY(%s) AND is_current = TRUE
-                ORDER BY fact_type, current_best DESC, confidence DESC, fact_value
+                SELECT group_id, fact_type, COALESCE(NULLIF(normalized_value, ''), fact_value), confidence
+                FROM group_fact_events
+                WHERE group_id = ANY(%s)
+                ORDER BY fact_type, confidence DESC, collected_at DESC
                 """,
                 (pg_ids,),
             )
-            for group_id, fact_type, fact_value, confidence, current_best in cur.fetchall():
+            for group_id, fact_type, fact_value, confidence in cur.fetchall():
                 by_id[str(group_id)]["facts"].append(
-                    {
-                        "fact_type": fact_type,
-                        "fact_value": fact_value,
-                        "confidence": float(confidence),
-                        "current_best": current_best,
-                    }
+                    {"fact_type": fact_type, "fact_value": fact_value, "confidence": float(confidence), "current_best": False}
                 )
             cur.execute(
                 """
-                SELECT source_group_id, relation_type, target_name, confidence
-                FROM group_relations
-                WHERE source_group_id = ANY(%s) AND is_current = TRUE
+                SELECT group_id, relation_type, target_name, confidence
+                FROM group_structure_events
+                WHERE group_id = ANY(%s) AND structure_type = 'relation'
                 ORDER BY relation_type, confidence DESC, target_name
                 """,
                 (pg_ids,),
             )
             for group_id, relation_type, target_name, confidence in cur.fetchall():
                 by_id[str(group_id)]["relations"].append(
-                    {
-                        "relation_type": relation_type,
-                        "target_name": target_name,
-                        "confidence": float(confidence),
-                    }
+                    {"relation_type": relation_type, "target_name": target_name, "confidence": float(confidence)}
                 )
             cur.execute(
                 """
                 SELECT group_id, member_name, role, confidence
-                FROM group_members
-                WHERE group_id = ANY(%s) AND is_current = TRUE
+                FROM group_structure_events
+                WHERE group_id = ANY(%s) AND structure_type = 'member'
                 ORDER BY confidence DESC, member_name
                 """,
                 (pg_ids,),
             )
             for group_id, member_name, role, confidence in cur.fetchall():
                 by_id[str(group_id)]["members"].append(
-                    {
-                        "member_name": member_name,
-                        "role": role,
-                        "confidence": float(confidence),
-                    }
+                    {"member_name": member_name, "role": role, "confidence": float(confidence)}
                 )
             cur.execute(
                 """
-                SELECT eg.group_id, e.event_date, e.date_precision, e.event_type,
-                       e.title, e.summary, e.confidence
-                FROM activity_events e
-                JOIN event_groups eg ON eg.event_id = e.id
-                WHERE eg.group_id = ANY(%s)
-                ORDER BY e.event_date NULLS LAST, e.created_at
+                SELECT group_id, event_date, date_precision, event_type, title, summary, confidence
+                FROM group_activity_timeline
+                WHERE group_id = ANY(%s)
+                ORDER BY event_date NULLS LAST, created_at
                 """,
                 (pg_ids,),
             )
@@ -1455,34 +1423,13 @@ class PostgresRepository:
         return event_id
 
     def apply_profile_synthesis(self, payload: dict[str, Any]) -> None:
-        """Apply latest overview and current_best choices for facts."""
+        """Apply latest overview only; facts remain append-only ledger rows."""
 
-        singleton_fact_types = {"suspected_source", "common_language"}
         with self.conn.cursor() as cur:
             cur.execute(
                 "UPDATE threat_groups SET latest_overview = %s, updated_at = NOW() WHERE id = %s",
                 (payload["latest_overview"], payload["group_id"]),
             )
-            for update in payload["current_best_updates"]:
-                if update["fact_type"] in singleton_fact_types:
-                    cur.execute(
-                        """
-                        UPDATE group_facts
-                        SET current_best = CASE WHEN id = %s THEN TRUE ELSE FALSE END,
-                            updated_at = NOW()
-                        WHERE group_id = %s AND fact_type = %s
-                        """,
-                        (update["fact_id"], payload["group_id"], update["fact_type"]),
-                    )
-                else:
-                    cur.execute(
-                        """
-                        UPDATE group_facts
-                        SET current_best = TRUE, updated_at = NOW()
-                        WHERE id = %s AND group_id = %s AND fact_type = %s
-                        """,
-                        (update["fact_id"], payload["group_id"], update["fact_type"]),
-                    )
 
     def apply_structure_synthesis(self, payload: dict[str, Any]) -> None:
         """Apply latest structure overview to the group."""
