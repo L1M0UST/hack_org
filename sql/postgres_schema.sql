@@ -67,6 +67,44 @@ CREATE TABLE IF NOT EXISTS collected_documents (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+
+CREATE TABLE IF NOT EXISTS intel_sources (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    source_type TEXT NOT NULL,
+    tier TEXT NOT NULL DEFAULT 'A',
+    category TEXT NOT NULL,
+    url TEXT NOT NULL,
+    enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    weight NUMERIC(8,4) NOT NULL DEFAULT 1.0,
+    fetch_full_article BOOLEAN NOT NULL DEFAULT TRUE,
+    keywords JSONB NOT NULL DEFAULT '[]'::jsonb,
+    headers JSONB NOT NULL DEFAULT '{}'::jsonb,
+    api_key_env TEXT,
+    auth_header TEXT,
+    max_items INTEGER,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS model_runs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    document_id UUID REFERENCES collected_documents(id) ON DELETE SET NULL,
+    run_type TEXT NOT NULL,
+    model_name TEXT NOT NULL,
+    model_version TEXT,
+    prompt_version TEXT NOT NULL,
+    input_payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+    output_payload JSONB,
+    status TEXT NOT NULL DEFAULT 'running',
+    error_message TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    finished_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_model_runs_document_type_status
+ON model_runs (document_id, run_type, status);
+
 CREATE TABLE IF NOT EXISTS document_group_matches (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     document_id UUID NOT NULL REFERENCES collected_documents(id) ON DELETE CASCADE,
