@@ -222,3 +222,40 @@ CREATE TABLE IF NOT EXISTS apt_group_export (
     source_evidence TEXT,
     storage_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+
+CREATE TABLE IF NOT EXISTS apt_group_change_log (
+    change_seq BIGSERIAL PRIMARY KEY,
+    operation TEXT NOT NULL,
+    apt_organization TEXT NOT NULL,
+    old_row JSONB,
+    new_row JSONB,
+    changed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE OR REPLACE FUNCTION log_apt_group_change()
+RETURNS trigger AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        INSERT INTO apt_group_change_log(operation, apt_organization, old_row, new_row)
+        VALUES ('insert', NEW.apt_organization, NULL, to_jsonb(NEW));
+        RETURN NEW;
+    ELSIF TG_OP = 'UPDATE' THEN
+        IF to_jsonb(OLD) IS DISTINCT FROM to_jsonb(NEW) THEN
+            INSERT INTO apt_group_change_log(operation, apt_organization, old_row, new_row)
+            VALUES ('update', NEW.apt_organization, to_jsonb(OLD), to_jsonb(NEW));
+        END IF;
+        RETURN NEW;
+    ELSIF TG_OP = 'DELETE' THEN
+        INSERT INTO apt_group_change_log(operation, apt_organization, old_row, new_row)
+        VALUES ('delete', OLD.apt_organization, to_jsonb(OLD), NULL);
+        RETURN OLD;
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_apt_group_change ON apt_group_export;
+CREATE TRIGGER trg_apt_group_change
+AFTER INSERT OR UPDATE OR DELETE ON apt_group_export
+FOR EACH ROW EXECUTE FUNCTION log_apt_group_change();

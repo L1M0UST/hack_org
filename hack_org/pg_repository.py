@@ -225,6 +225,55 @@ class PostgresRepository:
                 )
                 """
             )
+            cur.execute(
+                """
+                CREATE TABLE IF NOT EXISTS apt_group_change_log (
+                    change_seq BIGSERIAL PRIMARY KEY,
+                    operation TEXT NOT NULL,
+                    apt_organization TEXT NOT NULL,
+                    old_row JSONB,
+                    new_row JSONB,
+                    changed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                )
+                """
+            )
+            cur.execute(
+                """
+                CREATE OR REPLACE FUNCTION log_apt_group_change()
+                RETURNS trigger AS $$
+                BEGIN
+                    IF TG_OP = 'INSERT' THEN
+                        INSERT INTO apt_group_change_log(operation, apt_organization, old_row, new_row)
+                        VALUES ('insert', NEW.apt_organization, NULL, to_jsonb(NEW));
+                        RETURN NEW;
+                    ELSIF TG_OP = 'UPDATE' THEN
+                        IF to_jsonb(OLD) IS DISTINCT FROM to_jsonb(NEW) THEN
+                            INSERT INTO apt_group_change_log(operation, apt_organization, old_row, new_row)
+                            VALUES ('update', NEW.apt_organization, to_jsonb(OLD), to_jsonb(NEW));
+                        END IF;
+                        RETURN NEW;
+                    ELSIF TG_OP = 'DELETE' THEN
+                        INSERT INTO apt_group_change_log(operation, apt_organization, old_row, new_row)
+                        VALUES ('delete', OLD.apt_organization, to_jsonb(OLD), NULL);
+                        RETURN OLD;
+                    END IF;
+                    RETURN NULL;
+                END;
+                $$ LANGUAGE plpgsql
+                """
+            )
+            cur.execute(
+                """
+                DROP TRIGGER IF EXISTS trg_apt_group_change ON apt_group_export
+                """
+            )
+            cur.execute(
+                """
+                CREATE TRIGGER trg_apt_group_change
+                AFTER INSERT OR UPDATE OR DELETE ON apt_group_export
+                FOR EACH ROW EXECUTE FUNCTION log_apt_group_change()
+                """
+            )
             cur.execute(_APT_GROUP_EXPORT_CN_VIEW_SQL)
 
     def has_successful_model_run(self, run_type: str, document_id: str | None = None) -> bool:
@@ -917,6 +966,44 @@ class PostgresRepository:
                 item = {APT_GROUP_EXPORT_CN_COLUMNS.get(key, key): value for key, value in item.items()}
             result.append(item)
         return result
+
+    def apt_group_change_rows(self, after_seq: int = 0, limit: int | None = None) -> list[dict[str, Any]]:
+        """Return apt_group change log rows after a sequence for offline replay."""
+
+        with self.conn.cursor() as cur:
+            limit_sql = "LIMIT %s" if limit else ""
+            params: tuple[Any, ...] = (after_seq, limit) if limit else (after_seq,)
+            cur.execute(
+                f"""
+                SELECT change_seq, operation, apt_organization, old_row, new_row, changed_at
+                FROM apt_group_change_log
+                WHERE change_seq > %s
+                  AND operation IN ('insert', 'update')
+                ORDER BY change_seq
+                {limit_sql}
+                """,
+                params,
+            )
+            rows = []
+            for change_seq, operation, apt_organization, old_row, new_row, changed_at in cur.fetchall():
+                rows.append(
+                    {
+                        "change_seq": int(change_seq),
+                        "operation": operation,
+                        "apt_organization": apt_organization,
+                        "old_row": old_row,
+                        "new_row": old_row if operation == "delete" else new_row,
+                        "changed_at": changed_at.isoformat() if changed_at else None,
+                    }
+                )
+            return rows
+
+    def max_apt_group_change_seq(self) -> int:
+        """Return latest apt_group change sequence."""
+
+        with self.conn.cursor() as cur:
+            cur.execute("SELECT COALESCE(MAX(change_seq), 0) FROM apt_group_change_log")
+            return int(cur.fetchone()[0])
 
     def group_archive_snapshots(self) -> list[dict[str, Any]]:
         """Return normalized archive-ready snapshots for every PostgreSQL group from append-only ledgers."""
