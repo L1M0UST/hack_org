@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import yaml
-from dotenv import load_dotenv
+from .env_utils import load_env_file
 
 
 @dataclass
@@ -27,7 +27,7 @@ def load_database_config(path: Path, env_path: Path | None = None) -> DatabaseCo
     """Load database config from YAML indirection plus environment variables."""
 
     if env_path:
-        load_dotenv(env_path)
+        load_env_file(env_path)
     data = yaml.safe_load(path.read_text(encoding="utf-8"))["database"]
     return DatabaseConfig(
         driver=str(data["driver"]),

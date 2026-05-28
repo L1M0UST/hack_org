@@ -13,7 +13,7 @@ from typing import Any, Protocol
 import httpx
 import requests
 import yaml
-from dotenv import load_dotenv
+from .env_utils import load_env_file
 
 
 class Notifier(Protocol):
@@ -145,7 +145,7 @@ def load_notifier(config_path: Path, root: Path, env_path: Path | None = None) -
     """Load notifier from config."""
 
     if env_path:
-        load_dotenv(env_path)
+        load_env_file(env_path)
     data = yaml.safe_load(config_path.read_text(encoding="utf-8"))["notifications"]
     if not data.get("enabled", False):
         return NullNotifier()

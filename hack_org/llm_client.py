@@ -11,11 +11,11 @@ from typing import Any
 
 import httpx
 import yaml
-from dotenv import load_dotenv
 from jsonschema import ValidationError
 
 from .llm_protocol import load_schema, validate_payload
 from .errors import ModelAuthError, ModelConnectionError, ModelResponseFormatError
+from .env_utils import load_env_file
 
 
 @dataclass
@@ -70,7 +70,7 @@ class OpenAICompatibleClient:
 
     def __init__(self, config: LLMConfig, env_path: Path | None = None) -> None:
         if env_path:
-            load_dotenv(env_path)
+            load_env_file(env_path)
         api_key = os.environ.get(config.api_key_env)
         if not api_key:
             raise RuntimeError(f"Missing API key env var: {config.api_key_env}")

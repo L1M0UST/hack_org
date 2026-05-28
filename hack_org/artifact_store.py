@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Protocol
 
 import yaml
-from dotenv import load_dotenv
+from .env_utils import load_env_file
 
 
 class ArtifactStore(Protocol):
@@ -65,7 +65,7 @@ def load_artifact_store(config_path: Path, env_path: Path | None = None) -> Arti
     """Load the configured artifact storage backend."""
 
     if env_path:
-        load_dotenv(env_path)
+        load_env_file(env_path)
     data = yaml.safe_load(config_path.read_text(encoding="utf-8"))["storage"]
     backend = str(data.get("backend", "local")).casefold()
     if backend == "local":
