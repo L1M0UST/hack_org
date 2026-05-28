@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+from uuid import UUID
 
 from .pg_repository import PostgresRepository
 
@@ -38,27 +39,75 @@ class ModelOutputIngestor:
             "relations": 0,
             "members": 0,
             "events": 0,
+            "discarded_invalid_group_refs": 0,
         }
+        valid_group_ids = self._valid_group_ids_from_payload(payload)
         for item in payload["matched_groups"]:
+            if not _item_has_valid_group(item, valid_group_ids):
+                counters["discarded_invalid_group_refs"] += 1
+                continue
             self.repository.upsert_article_match(document_id, item)
             counters["matches"] += 1
         for item in payload["basic_profile_updates"]:
+            if not _item_has_valid_group(item, valid_group_ids):
+                counters["discarded_invalid_group_refs"] += 1
+                continue
             if not _fact_passes_guardrails(item):
                 continue
             item = _localize_fact_value(item)
             self.repository.append_fact_event(item, document_id)
             counters["facts"] += 1
         for item in payload["organization_structure_updates"]["relations"]:
+            if not _item_has_valid_group(item, valid_group_ids):
+                counters["discarded_invalid_group_refs"] += 1
+                continue
             self.repository.append_structure_event(item, document_id, structure_type="relation")
             counters["relations"] += 1
         for item in payload["organization_structure_updates"]["members"]:
+            if not _item_has_valid_group(item, valid_group_ids):
+                counters["discarded_invalid_group_refs"] += 1
+                continue
             self.repository.append_structure_event(item, document_id, structure_type="member")
             counters["members"] += 1
         for item in payload["activity_events"]:
+            if not _item_has_valid_group(item, valid_group_ids):
+                counters["discarded_invalid_group_refs"] += 1
+                continue
             self.repository.append_activity_timeline_event(item, document_id)
             counters["events"] += 1
         return counters
 
+    def _valid_group_ids_from_payload(self, payload: dict[str, Any]) -> set[str]:
+        """Find official threat_group UUIDs referenced by model output; reject names and document ids."""
+
+        candidates: set[str] = set()
+        containers = [
+            payload.get("matched_groups", []),
+            payload.get("basic_profile_updates", []),
+            payload.get("organization_structure_updates", {}).get("relations", []),
+            payload.get("organization_structure_updates", {}).get("members", []),
+            payload.get("activity_events", []),
+        ]
+        for items in containers:
+            for item in items:
+                group_id = str(item.get("group_id", ""))
+                if _looks_like_uuid(group_id):
+                    candidates.add(group_id)
+        return self.repository.existing_group_ids(sorted(candidates))
+
+
+
+def _looks_like_uuid(value: str) -> bool:
+    try:
+        UUID(str(value))
+        return True
+    except (TypeError, ValueError):
+        return False
+
+
+def _item_has_valid_group(item: dict[str, Any], valid_group_ids: set[str]) -> bool:
+    group_id = str(item.get("group_id", ""))
+    return group_id in valid_group_ids
 
 def _fact_passes_guardrails(item: dict[str, Any]) -> bool:
     """Reject the highest-risk unsupported fact shapes before storage."""

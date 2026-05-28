@@ -347,6 +347,19 @@ class PostgresRepository:
                 ),
             )
 
+
+    def existing_group_ids(self, group_ids: list[str]) -> set[str]:
+        """Return the subset of UUID-looking group ids that exist in threat_groups."""
+
+        if not group_ids:
+            return set()
+        with self.conn.cursor() as cur:
+            cur.execute(
+                "SELECT id::text FROM threat_groups WHERE id = ANY(%s::uuid[])",
+                (group_ids,),
+            )
+            return {row[0] for row in cur.fetchall()}
+
     def organization_codes_for_group_ids(self, group_ids: list[str]) -> list[str]:
         """Resolve PostgreSQL group UUIDs back to local stable organization codes."""
 
