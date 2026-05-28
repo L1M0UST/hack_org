@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import json
 import subprocess
+import shutil
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -110,14 +111,17 @@ class TelegramNotifier:
     def _send_with_curl(self, url: str, payload: dict[str, Any]) -> None:
         """Fallback to system curl for local proxy/TLS combinations."""
 
+        curl_bin = shutil.which("curl") or shutil.which("curl.exe")
+        if not curl_bin:
+            raise RuntimeError("curl executable not found")
         command = [
-            "curl.exe",
+            curl_bin,
             "-sS",
             "--fail",
             "--max-time",
             "30",
             "--http1.1",
-            "--ssl-no-revoke",
+            *(["--ssl-no-revoke"] if curl_bin.endswith("curl.exe") else []),
             "-H",
             "Content-Type: application/json",
             "-d",

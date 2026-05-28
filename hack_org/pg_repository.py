@@ -867,8 +867,8 @@ class PostgresRepository:
             )
             return [row[0] for row in cur.fetchall()]
 
-    def apt_group_export_rows(self, chinese_headers: bool = False) -> list[dict[str, Any]]:
-        """Return rows in the same column order as table.txt."""
+    def apt_group_export_rows(self, chinese_headers: bool = False, since: str | None = None) -> list[dict[str, Any]]:
+        """Return apt_group_export rows in stable column order, optionally filtered by storage_time."""
 
         columns = [
             "apt_organization",
@@ -896,12 +896,16 @@ class PostgresRepository:
             "storage_time",
         ]
         with self.conn.cursor() as cur:
+            where = "WHERE storage_time >= %s" if since else ""
+            params = (since,) if since else ()
             cur.execute(
                 f"""
                 SELECT {", ".join(columns)}
                 FROM apt_group_export
+                {where}
                 ORDER BY apt_organization
-                """
+                """,
+                params,
             )
             rows = cur.fetchall()
         result = []

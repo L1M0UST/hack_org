@@ -96,6 +96,7 @@ class DailyPipeline:
         promote_min_evidence: int = 2,
         promote_min_confidence: float = 0.65,
         promote_limit: int = 20,
+        apt_group_only: bool = False,
     ) -> PipelineSummary:
         """Process pending articles and refresh only the affected groups."""
 
@@ -114,6 +115,7 @@ class DailyPipeline:
             promote_min_evidence=promote_min_evidence,
             promote_min_confidence=promote_min_confidence,
             promote_limit=promote_limit,
+            apt_group_only=apt_group_only,
         )
         self._preflight()
         if collect:
@@ -296,7 +298,7 @@ class DailyPipeline:
 
             for organization_code in sorted(touched_groups):
                 try:
-                    self._refresh_group(repository, ingestor, organization_code)
+                    self._refresh_group(repository, ingestor, organization_code, apt_group_only=apt_group_only)
                     summary.groups_refreshed += 1
                     self.logger.log(
                         "processing",
@@ -357,14 +359,19 @@ class DailyPipeline:
         repository: PostgresRepository,
         ingestor: ModelOutputIngestor,
         organization_code: str,
+        *,
+        apt_group_only: bool = False,
     ) -> None:
         """Run profile, structure, and export synthesis for one group."""
 
-        tasks = [
-            ("group_profile_synthesis", repository.profile_synthesis_input(organization_code)),
-            ("group_structure_synthesis", repository.structure_synthesis_input(organization_code)),
-            ("apt_group_export_synthesis", repository.export_synthesis_input(organization_code)),
-        ]
+        if apt_group_only:
+            tasks = [("apt_group_export_synthesis", repository.export_synthesis_input(organization_code))]
+        else:
+            tasks = [
+                ("group_profile_synthesis", repository.profile_synthesis_input(organization_code)),
+                ("group_structure_synthesis", repository.structure_synthesis_input(organization_code)),
+                ("apt_group_export_synthesis", repository.export_synthesis_input(organization_code)),
+            ]
         for task_type, variables in tasks:
             self.logger.log(
                 "processing",

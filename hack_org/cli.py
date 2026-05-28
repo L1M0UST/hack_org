@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import ftplib
+import os
 from pathlib import Path
 
 from .aliasing import import_alias_seed
@@ -26,6 +28,7 @@ from .pipeline import DailyPipeline
 from .pg_archive import PostgresArchiveExporter
 from .notification import load_notifier, render_report_message
 from .errors import classify_error
+from .env_utils import load_env_file
 from .scoring import score_article
 from .storage import StateStore
 from .utils import utcnow, write_json
@@ -110,11 +113,19 @@ def main() -> None:
     run_pipeline.add_argument("--promote-min-evidence", type=int, default=2)
     run_pipeline.add_argument("--promote-min-confidence", type=float, default=0.65)
     run_pipeline.add_argument("--promote-limit", type=int, default=20)
+    run_pipeline.add_argument("--apt-group-only", action="store_true")
     sub.add_parser("rebuild_apt_group_projection")
     export_table = sub.add_parser("export_apt_table")
     export_table.add_argument("--output", default=".state/apt_group_export.tsv")
     export_table.add_argument("--format", choices=["tsv", "csv", "jsonl"], default="tsv")
     export_table.add_argument("--english-headers", action="store_true")
+    export_table.add_argument("--since", default=None)
+    send_apt_ftp = sub.add_parser("send_apt_table_ftp")
+    send_apt_ftp.add_argument("--output", default=".state/ftp/apt_group_export.jsonl")
+    send_apt_ftp.add_argument("--format", choices=["jsonl", "csv", "tsv"], default="jsonl")
+    send_apt_ftp.add_argument("--since", default=None)
+    send_apt_ftp.add_argument("--remote-name", default=None)
+    send_apt_ftp.add_argument("--english-headers", action="store_true")
     sub.add_parser("export_group_archives")
     sub.add_parser("drop_legacy_pg_tables")
     sub.add_parser("ledger_counts")
@@ -369,6 +380,7 @@ def main() -> None:
                 promote_min_evidence=args.promote_min_evidence,
                 promote_min_confidence=args.promote_min_confidence,
                 promote_limit=args.promote_limit,
+                apt_group_only=args.apt_group_only,
             )
             print(json.dumps(summary.as_dict(), ensure_ascii=False, indent=2))
         except Exception as exc:
@@ -388,7 +400,7 @@ def main() -> None:
         with connect_database(db_config) as conn:
             repository = PostgresRepository(conn)
             repository.ensure_runtime_schema()
-            rows = repository.apt_group_export_rows(chinese_headers=not args.english_headers)
+            rows = repository.apt_group_export_rows(chinese_headers=not args.english_headers, since=args.since)
         output_path = root / args.output
         output_path.parent.mkdir(parents=True, exist_ok=True)
         if args.format == "jsonl":
@@ -426,6 +438,18 @@ def main() -> None:
                 writer.writeheader()
                 writer.writerows(rows)
         print(json.dumps({"rows": len(rows), "output": str(output_path)}, ensure_ascii=False, indent=2))
+    elif args.command == "send_apt_table_ftp":
+        db_config = load_database_config(root / "config" / "database.yaml", env_path=root / ".env")
+        with connect_database(db_config) as conn:
+            repository = PostgresRepository(conn)
+            repository.ensure_runtime_schema()
+            rows = repository.apt_group_export_rows(chinese_headers=not args.english_headers, since=args.since)
+        output_path = root / args.output
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        _write_rows(output_path, rows, args.format)
+        remote_name = args.remote_name or output_path.name
+        _send_file_ftp(output_path, remote_name, root / ".env")
+        print(json.dumps({"rows": len(rows), "local_file": str(output_path), "remote_name": remote_name}, ensure_ascii=False, indent=2))
     elif args.command == "export_group_archives":
         db_config = load_database_config(root / "config" / "database.yaml", env_path=root / ".env")
         with connect_database(db_config) as conn:
@@ -476,6 +500,45 @@ def main() -> None:
         print(json.dumps({"output": str(path)}, ensure_ascii=False, indent=2))
     store.close()
 
+
+
+def _write_rows(output_path: Path, rows: list[dict], fmt: str) -> None:
+    """Write rows as jsonl/csv/tsv."""
+
+    if fmt == "jsonl":
+        with output_path.open("w", encoding="utf-8") as handle:
+            for row in rows:
+                handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+        return
+    delimiter = "\t" if fmt == "tsv" else ","
+    columns = list(rows[0].keys()) if rows else []
+    with output_path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=columns, delimiter=delimiter)
+        if columns:
+            writer.writeheader()
+            writer.writerows(rows)
+
+
+def _send_file_ftp(local_path: Path, remote_name: str, env_path: Path) -> None:
+    """Upload one file through FTP/FTPS using FTP_* environment variables."""
+
+    load_env_file(env_path)
+    host = os.environ["FTP_HOST"]
+    port = int(os.environ.get("FTP_PORT", "21"))
+    user = os.environ["FTP_USER"]
+    password = os.environ["FTP_PASSWORD"]
+    remote_dir = os.environ.get("FTP_DIR", "")
+    use_tls = os.environ.get("FTP_TLS", "false").casefold() in {"1", "true", "yes"}
+    ftp_cls = ftplib.FTP_TLS if use_tls else ftplib.FTP
+    with ftp_cls() as ftp:
+        ftp.connect(host, port, timeout=30)
+        ftp.login(user, password)
+        if use_tls:
+            ftp.prot_p()
+        if remote_dir:
+            ftp.cwd(remote_dir)
+        with local_path.open("rb") as handle:
+            ftp.storbinary(f"STOR {remote_name}", handle)
 
 def _sync_groups_json(state_dir: Path, store: StateStore) -> None:
     write_json(state_dir / "groups.json", [group.model_dump() for group in store.group_profiles()])
