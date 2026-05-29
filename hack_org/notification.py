@@ -81,6 +81,7 @@ class TelegramNotifier:
     bot_token: str
     chat_id: str
     proxy: str | None = None
+    curl_wrapper: str | None = None
 
     def send(self, title: str, body: str, report: dict[str, Any]) -> None:
         """Send one text message through Telegram Bot API."""
@@ -130,6 +131,8 @@ class TelegramNotifier:
         if self.proxy:
             command.extend(["-x", self.proxy])
         command.append(url)
+        if self.curl_wrapper:
+            command = [self.curl_wrapper, *command]
         last_error = None
         for attempt in range(1, 4):
             result = subprocess.run(command, check=False, capture_output=True, text=True)
@@ -168,6 +171,7 @@ def load_notifier(config_path: Path, root: Path, env_path: Path | None = None) -
             bot_token=_required_env(telegram_cfg["bot_token_env"]),
             chat_id=_required_env(telegram_cfg["chat_id_env"]),
             proxy=proxy,
+            curl_wrapper=os.environ.get("TELEGRAM_CURL_WRAPPER"),
         )
     if backend == "wechat_qr":
         raise RuntimeError(

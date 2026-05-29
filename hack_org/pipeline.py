@@ -375,7 +375,19 @@ class DailyPipeline:
         with connect_database(self.db_config) as conn:
             report_path = DailyReportBuilder(self.root / ".state", self.store, PostgresRepository(conn)).write()
         self.logger.log("processing", "INFO", "daily_report_written", "日报已生成", report_path=str(report_path))
-        self._send_report(report_path)
+        try:
+            self._send_report(report_path)
+        except Exception as exc:
+            error_info = classify_error(exc)
+            self.logger.log(
+                "notification",
+                "ERROR",
+                "daily_report_send_failed",
+                "日报通知发送失败，流水线主体已完成",
+                **error_info,
+                error=str(exc),
+                report_path=str(report_path),
+            )
         self.logger.log("processing", "INFO", "pipeline_finished", "流水线完成", **summary.as_dict())
         return summary
 
