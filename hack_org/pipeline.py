@@ -145,6 +145,31 @@ class DailyPipeline:
                 "采集阶段完成",
                 **summary.collection_summary,
             )
+        if auto_promote_discovered:
+            discovery = discover_unknown_groups(
+                self.store,
+                article_limit=article_limit,
+                min_confidence=promote_min_confidence,
+            )
+            summary.unknown_group_candidates = discovery.candidates_found
+            summary.unknown_group_evidence = discovery.evidence_written
+            promoted = self.store.promote_discovered_group_candidates(
+                min_evidence=promote_min_evidence,
+                min_confidence=promote_min_confidence,
+                limit=promote_limit,
+            )
+            summary.promoted_unknown_groups = sum(
+                1 for item in promoted if item.get("status") == "promoted"
+            )
+            self.logger.log(
+                "processing",
+                "INFO",
+                "unknown_groups_auto_promoted",
+                "æœªçŸ¥ç»„ç»‡è‡ªåŠ¨è½¬æ­£å®Œæˆ",
+                candidates_found=summary.unknown_group_candidates,
+                evidence_written=summary.unknown_group_evidence,
+                promoted=summary.promoted_unknown_groups,
+            )
         groups = self.store.group_profiles()
         self.logger.log("processing", "INFO", "load_groups_finished", "组织身份加载完成", groups=len(groups))
         article_rows = self.store.article_records(order=article_order)
