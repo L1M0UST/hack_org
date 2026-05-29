@@ -562,10 +562,28 @@ def _send_file_sftp(local_path: Path, remote_name: str, env_path: Path) -> None:
         transport.connect(username=user, password=password)
         with paramiko.SFTPClient.from_transport(transport) as sftp:
             if remote_dir:
-                sftp.chdir(remote_dir)
+                _ensure_sftp_dir(sftp, remote_dir)
             sftp.put(str(local_path), remote_name)
     finally:
         transport.close()
+
+
+def _ensure_sftp_dir(sftp, remote_dir: str) -> None:
+    """Create an SFTP directory tree if it does not exist, then chdir into it."""
+
+    normalized = remote_dir.replace("\\", "/").strip()
+    if not normalized or normalized == ".":
+        return
+    is_absolute = normalized.startswith("/")
+    parts = [part for part in normalized.split("/") if part]
+    if is_absolute:
+        sftp.chdir("/")
+    for part in parts:
+        try:
+            sftp.chdir(part)
+        except OSError:
+            sftp.mkdir(part)
+            sftp.chdir(part)
 
 
 def _write_rows(output_path: Path, rows: list[dict], fmt: str) -> None:
