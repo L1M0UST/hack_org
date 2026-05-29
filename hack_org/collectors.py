@@ -189,7 +189,8 @@ class Collector:
 
     def _save_artifacts(self, source_id: str, url: str, html: str, text: str, metadata: dict) -> dict[str, str]:
         digest = sha256_text(url)[:16]
-        base = self.raw_dir / source_id / digest
+        day = utcnow().date().isoformat()
+        base = self.raw_dir / day / source_id / digest
         base.mkdir(parents=True, exist_ok=True)
         html_path = base / "raw.html"
         text_path = base / "clean.txt"
@@ -198,13 +199,13 @@ class Collector:
         text_path.write_text(text, encoding="utf-8", errors="ignore")
         write_json(meta_path, {"url": url, **metadata})
         raw_object_key = self.artifact_store.upload_file(
-            html_path, artifact_object_key(source_id, digest, "raw.html")
+            html_path, artifact_object_key(source_id, digest, "raw.html", day=day)
         )
         clean_object_key = self.artifact_store.upload_file(
-            text_path, artifact_object_key(source_id, digest, "clean.txt")
+            text_path, artifact_object_key(source_id, digest, "clean.txt", day=day)
         )
         meta_object_key = self.artifact_store.upload_file(
-            meta_path, artifact_object_key(source_id, digest, "meta.json")
+            meta_path, artifact_object_key(source_id, digest, "meta.json", day=day)
         )
         return {
             "html_path": str(html_path),

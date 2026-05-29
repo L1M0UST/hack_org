@@ -85,9 +85,11 @@ def load_artifact_store(config_path: Path, env_path: Path | None = None) -> Arti
     )
 
 
-def artifact_object_key(source_id: str, digest: str, filename: str) -> str:
+def artifact_object_key(source_id: str, digest: str, filename: str, day: str | None = None) -> str:
     """Build one stable object key."""
 
+    if day:
+        return f"raw/{day}/{source_id}/{digest}/{filename}"
     return f"raw/{source_id}/{digest}/{filename}"
 
 
