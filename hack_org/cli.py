@@ -130,10 +130,10 @@ def main() -> None:
     export_changes.add_argument("--after-seq", type=int, default=0)
     export_changes.add_argument("--limit", type=int, default=None)
     export_changes.add_argument("--output", default=".state/apt_group_changes.jsonl")
-    send_changes = sub.add_parser("send_apt_group_changes_ftp")
+    send_changes = sub.add_parser("send_apt_group_changes_sftp")
     send_changes.add_argument("--after-seq", type=int, default=0)
     send_changes.add_argument("--limit", type=int, default=None)
-    send_changes.add_argument("--output", default=".state/ftp/apt_group_changes.jsonl")
+    send_changes.add_argument("--output", default=".state/sftp/apt_group_changes.jsonl")
     send_changes.add_argument("--remote-name", default=None)
     sub.add_parser("export_group_archives")
     sub.add_parser("drop_legacy_pg_tables")
@@ -459,7 +459,7 @@ def main() -> None:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         _write_jsonl(output_path, rows)
         print(json.dumps({"rows": len(rows), "output": str(output_path), "last_exported_seq": last_exported_seq, "latest_seq": latest_seq}, ensure_ascii=False, indent=2))
-    elif args.command == "send_apt_group_changes_ftp":
+    elif args.command == "send_apt_group_changes_sftp":
         db_config = load_database_config(root / "config" / "database.yaml", env_path=root / ".env")
         with connect_database(db_config) as conn:
             repository = PostgresRepository(conn)
@@ -471,7 +471,7 @@ def main() -> None:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         _write_jsonl(output_path, rows)
         remote_name = args.remote_name or output_path.name
-        _send_file_ftp(output_path, remote_name, root / ".env")
+        _send_file_sftp(output_path, remote_name, root / ".env")
         print(json.dumps({"rows": len(rows), "local_file": str(output_path), "remote_name": remote_name, "last_exported_seq": last_exported_seq, "latest_seq": latest_seq}, ensure_ascii=False, indent=2))
     elif args.command == "send_apt_table_ftp":
         db_config = load_database_config(root / "config" / "database.yaml", env_path=root / ".env")
@@ -544,6 +544,29 @@ def _write_jsonl(output_path: Path, rows: list[dict]) -> None:
     with output_path.open("w", encoding="utf-8") as handle:
         for row in rows:
             handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+
+def _send_file_sftp(local_path: Path, remote_name: str, env_path: Path) -> None:
+    """Upload one file through password SFTP using SFTP_* environment variables."""
+
+    load_env_file(env_path)
+    import paramiko
+
+    host = os.environ["SFTP_HOST"]
+    port = int(os.environ.get("SFTP_PORT", "22"))
+    user = os.environ["SFTP_USER"]
+    password = os.environ["SFTP_PASSWORD"]
+    remote_dir = os.environ.get("SFTP_DIR", ".")
+    transport = paramiko.Transport((host, port))
+    try:
+        transport.connect(username=user, password=password)
+        with paramiko.SFTPClient.from_transport(transport) as sftp:
+            if remote_dir:
+                sftp.chdir(remote_dir)
+            sftp.put(str(local_path), remote_name)
+    finally:
+        transport.close()
+
 
 def _write_rows(output_path: Path, rows: list[dict], fmt: str) -> None:
     """Write rows as jsonl/csv/tsv."""

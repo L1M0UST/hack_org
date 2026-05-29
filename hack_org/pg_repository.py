@@ -1333,8 +1333,8 @@ class PostgresRepository:
                   ) AS apt_organization,
                   CASE
                     WHEN COALESCE(NULLIF(g.organization_code, ''), '') <> ''
-                    THEN CONCAT('organization:', g.organization_code)
-                    ELSE NULL
+                    THEN g.organization_code
+                    ELSE ''
                   END AS organization_code,
                   g.display_name,
                   fp.attack_type, fp.technical_skills, fp.suspected_source, fp.affected_industry,
