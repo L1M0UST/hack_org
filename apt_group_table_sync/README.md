@@ -6,17 +6,17 @@ Offline-side tools for replaying `apt_group_change_log` JSONL packages into Clic
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install paramiko
 ```
 
 ## Environment
 
 ```env
-SFTP_HOST=1.2.3.4
-SFTP_PORT=22
-SFTP_USER=user
-SFTP_PASSWORD=password
-SFTP_DIR=/apt_group
+FTP_HOST=1.2.3.4
+FTP_PORT=21
+FTP_USER=user
+FTP_PASSWORD=password
+FTP_DIR=/apt_group
+FTP_TLS=false
 CLICKHOUSE_HOST=127.0.0.1
 CLICKHOUSE_PORT=9000
 CLICKHOUSE_USER=default
@@ -31,9 +31,9 @@ SYNC_STATE_FILE=.sync_state.json
 ## Run
 
 ```bash
-.venv/bin/python sync_apt_group_from_sftp.py --remote-name apt_group_changes.jsonl
+.venv/bin/python sync_apt_group_from_ftp.py --remote-name apt_group_changes.jsonl
 ```
 
-The script records `last_seq` locally and skips already applied changes.
+The script records `last_seq` locally, skips already applied changes, then deletes the remote FTP file and local downloaded file only after ClickHouse insert succeeds. Use `--keep-remote` or `--keep-local` if you want to retain files.
 
 For update replay, `apt_group_distributed` should write into a `ReplacingMergeTree` local table keyed by `apt_organization` with a version column such as `storage_time` or `change_seq`; ordinary MergeTree tables will keep historical duplicates.

@@ -1322,7 +1322,21 @@ class PostgresRepository:
                   related_certificates, source_evidence, storage_time
                 )
                 SELECT
-                  g.canonical_name, g.organization_code, g.display_name,
+                  CONCAT(
+                    'APT组织：',
+                    g.canonical_name,
+                    CASE
+                      WHEN COALESCE(NULLIF(g.organization_code, ''), '') <> ''
+                      THEN CONCAT('（', g.organization_code, '）')
+                      ELSE ''
+                    END
+                  ) AS apt_organization,
+                  CASE
+                    WHEN COALESCE(NULLIF(g.organization_code, ''), '') <> ''
+                    THEN CONCAT('organization:', g.organization_code)
+                    ELSE NULL
+                  END AS organization_code,
+                  g.display_name,
                   fp.attack_type, fp.technical_skills, fp.suspected_source, fp.affected_industry,
                   a.alias, fp.attack_pattern, t.attack_frequency, fp.target_country,
                   t.earliest_active_time, t.active_time, fp.common_language, g.latest_overview,

@@ -1,15 +1,14 @@
 ﻿#!/usr/bin/env python3
-"""Pull apt_group change-log JSONL from SFTP and replay into ClickHouse."""
+"""Pull apt_group change-log JSONL from FTP and replay into ClickHouse."""
 
 from __future__ import annotations
 
 import argparse
+import ftplib
 import json
 import os
 import subprocess
 from pathlib import Path
-
-import paramiko
 
 DEFAULT_APT_COLUMNS = [
     "apt_organization",
@@ -42,35 +41,55 @@ def main() -> None:
     parser.add_argument("--remote-name", required=True)
     parser.add_argument("--local-dir", default="incoming")
     parser.add_argument("--state-file", default=os.environ.get("SYNC_STATE_FILE", ".sync_state.json"))
+    parser.add_argument("--keep-remote", action="store_true")
+    parser.add_argument("--keep-local", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
     local_dir = Path(args.local_dir)
     local_dir.mkdir(parents=True, exist_ok=True)
     local_path = local_dir / args.remote_name
-    pull_sftp(args.remote_name, local_path)
+    pull_ftp(args.remote_name, local_path)
     last_seq = load_last_seq(Path(args.state_file))
     changes = [row for row in read_jsonl(local_path) if int(row["change_seq"]) > last_seq]
     if not changes:
+        if not args.dry_run:
+            cleanup(args.remote_name, local_path, keep_remote=args.keep_remote, keep_local=args.keep_local)
         print(json.dumps({"applied": 0, "last_seq": last_seq}, ensure_ascii=False))
         return
     if not args.dry_run:
         apply_changes(changes)
         save_last_seq(Path(args.state_file), max(int(row["change_seq"]) for row in changes))
+        cleanup(args.remote_name, local_path, keep_remote=args.keep_remote, keep_local=args.keep_local)
     print(json.dumps({"applied": len(changes), "last_seq": max(int(row["change_seq"]) for row in changes)}, ensure_ascii=False))
 
 
-def pull_sftp(remote_name: str, local_path: Path) -> None:
-    transport = paramiko.Transport((os.environ["SFTP_HOST"], int(os.environ.get("SFTP_PORT", "22"))))
-    try:
-        transport.connect(username=os.environ["SFTP_USER"], password=os.environ["SFTP_PASSWORD"])
-        with paramiko.SFTPClient.from_transport(transport) as sftp:
-            remote_dir = os.environ.get("SFTP_DIR", ".")
-            if remote_dir:
-                sftp.chdir(remote_dir)
-            sftp.get(remote_name, str(local_path))
-    finally:
-        transport.close()
+def connect_ftp():
+    use_tls = os.environ.get("FTP_TLS", "false").casefold() in {"1", "true", "yes"}
+    ftp_cls = ftplib.FTP_TLS if use_tls else ftplib.FTP
+    ftp = ftp_cls()
+    ftp.connect(os.environ["FTP_HOST"], int(os.environ.get("FTP_PORT", "21")), timeout=30)
+    ftp.login(os.environ["FTP_USER"], os.environ["FTP_PASSWORD"])
+    if use_tls:
+        ftp.prot_p()
+    remote_dir = os.environ.get("FTP_DIR", "")
+    if remote_dir:
+        ftp.cwd(remote_dir)
+    return ftp
+
+
+def pull_ftp(remote_name: str, local_path: Path) -> None:
+    with connect_ftp() as ftp:
+        with local_path.open("wb") as handle:
+            ftp.retrbinary(f"RETR {remote_name}", handle.write)
+
+
+def cleanup(remote_name: str, local_path: Path, *, keep_remote: bool, keep_local: bool) -> None:
+    if not keep_remote:
+        with connect_ftp() as ftp:
+            ftp.delete(remote_name)
+    if not keep_local and local_path.exists():
+        local_path.unlink()
 
 
 def read_jsonl(path: Path) -> list[dict]:
