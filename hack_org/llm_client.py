@@ -101,7 +101,7 @@ class OpenAICompatibleClient:
         for attempt in range(1, self.config.max_retries + 1):
             try:
                 content = self._chat_completion(task_type, schema, messages)
-                result = json.loads(content)
+                result = parse_model_json(content)
                 validate_payload(schema_path, result)
                 return result
             except (json.JSONDecodeError, ValidationError) as exc:
@@ -130,15 +130,19 @@ class OpenAICompatibleClient:
             "model": self.config.model,
             "temperature": self.config.temperature,
             "messages": messages,
-            "response_format": {
+        }
+        response_format = self.config.response_format.lower()
+        if response_format == "json_schema":
+            payload["response_format"] = {
                 "type": "json_schema",
                 "json_schema": {
                     "name": task_type,
                     "schema": schema,
                     "strict": True,
                 },
-            },
-        }
+            }
+        elif response_format == "json_object":
+            payload["response_format"] = {"type": "json_object"}
         try:
             response = httpx.post(
                 f"{self.config.base_url}/chat/completions",
@@ -153,8 +157,30 @@ class OpenAICompatibleClient:
             response.raise_for_status()
         except httpx.HTTPStatusError as exc:
             if exc.response.status_code in {401, 403}:
-                raise ModelAuthError(str(exc)) from exc
-            raise ModelConnectionError(str(exc)) from exc
+                raise ModelAuthError(_http_error_message(exc)) from exc
+            if exc.response.status_code == 400 and "response_format" in payload:
+                fallback_payload = dict(payload)
+                fallback_payload.pop("response_format", None)
+                try:
+                    response = httpx.post(
+                        f"{self.config.base_url}/chat/completions",
+                        headers={
+                            "Authorization": f"Bearer {self.api_key}",
+                            "Content-Type": "application/json",
+                        },
+                        json=fallback_payload,
+                        timeout=self.config.timeout_seconds,
+                        trust_env=False,
+                    )
+                    response.raise_for_status()
+                except httpx.HTTPStatusError as fallback_exc:
+                    if fallback_exc.response.status_code in {401, 403}:
+                        raise ModelAuthError(_http_error_message(fallback_exc)) from fallback_exc
+                    raise ModelConnectionError(_http_error_message(fallback_exc)) from fallback_exc
+                except httpx.RequestError as fallback_exc:
+                    raise ModelConnectionError(str(fallback_exc)) from fallback_exc
+                return response.json()["choices"][0]["message"]["content"]
+            raise ModelConnectionError(_http_error_message(exc)) from exc
         except httpx.RequestError as exc:
             raise ModelConnectionError(str(exc)) from exc
         return response.json()["choices"][0]["message"]["content"]
@@ -167,3 +193,70 @@ def render_template(template: str, variables: dict[str, Any]) -> str:
     for key, value in variables.items():
         rendered = rendered.replace(f"{{{{{key}}}}}", json.dumps(value, ensure_ascii=False, indent=2))
     return rendered
+
+
+def parse_model_json(content: str) -> dict[str, Any]:
+    """Parse JSON even when a reasoning model wraps it with <think> text."""
+
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError:
+        pass
+    stripped = _strip_thinking(content).strip()
+    try:
+        return json.loads(stripped)
+    except json.JSONDecodeError:
+        pass
+    json_text = _extract_first_json_value(stripped)
+    return json.loads(json_text)
+
+
+def _strip_thinking(content: str) -> str:
+    """Remove common reasoning wrappers from OpenAI-compatible providers."""
+
+    while True:
+        start = content.find("<think>")
+        end = content.find("</think>")
+        if start == -1 or end == -1 or end < start:
+            return content
+        content = content[:start] + content[end + len("</think>") :]
+
+
+def _extract_first_json_value(content: str) -> str:
+    """Return the first balanced JSON object or array in a string."""
+
+    start_positions = [pos for pos in (content.find("{"), content.find("[")) if pos != -1]
+    if not start_positions:
+        raise json.JSONDecodeError("No JSON object found in model output", content, 0)
+    start = min(start_positions)
+    opener = content[start]
+    closer = "}" if opener == "{" else "]"
+    depth = 0
+    in_string = False
+    escaped = False
+    for index in range(start, len(content)):
+        char = content[index]
+        if in_string:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            continue
+        if char == '"':
+            in_string = True
+        elif char == opener:
+            depth += 1
+        elif char == closer:
+            depth -= 1
+            if depth == 0:
+                return content[start : index + 1]
+    raise json.JSONDecodeError("Unclosed JSON object in model output", content, start)
+
+
+def _http_error_message(exc: httpx.HTTPStatusError) -> str:
+    """Include provider response body so 400 errors are actionable."""
+
+    body = exc.response.text[:2000]
+    return f"{exc}; response_body={body}"

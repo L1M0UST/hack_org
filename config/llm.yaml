@@ -1,12 +1,12 @@
 llm:
   provider: openai_compatible
-  base_url: https://token-plan-cn.xiaomimimo.com/v1
-  api_key_env: MIMO_API_KEY
-  model: mimo-v2.5
+  base_url: https://api.minimaxi.com/v1
+  api_key_env: MINIMAX_API_KEY
+  model: MiniMax-M3
   temperature: 0.1
   timeout_seconds: 120
   max_retries: 3
-  response_format: json_schema
+  response_format: none
   prompts:
     article_extract:
       system: prompts/article_extract.system.txt
