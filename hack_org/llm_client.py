@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -128,9 +129,11 @@ class OpenAICompatibleClient:
 
         payload = {
             "model": self.config.model,
-            "temperature": self.config.temperature,
             "messages": messages,
         }
+        if self.config.temperature is not None and not self._is_minimax_endpoint():
+            payload["temperature"] = self.config.temperature
+        payload = sanitize_for_provider(payload)
         response_format = self.config.response_format.lower()
         if response_format == "json_schema":
             payload["response_format"] = {
@@ -185,14 +188,47 @@ class OpenAICompatibleClient:
             raise ModelConnectionError(str(exc)) from exc
         return response.json()["choices"][0]["message"]["content"]
 
+    def _is_minimax_endpoint(self) -> bool:
+        """Return whether the configured endpoint is MiniMax-compatible."""
+
+        return "minimax" in self.config.base_url or "minimaxi" in self.config.base_url
+
 
 def render_template(template: str, variables: dict[str, Any]) -> str:
     """Render a tiny JSON-oriented placeholder template."""
 
     rendered = template
     for key, value in variables.items():
-        rendered = rendered.replace(f"{{{{{key}}}}}", json.dumps(value, ensure_ascii=False, indent=2))
+        rendered = rendered.replace(
+            f"{{{{{key}}}}}",
+            json.dumps(sanitize_for_provider(value), ensure_ascii=False, indent=2),
+        )
     return rendered
+
+
+def sanitize_for_provider(value: Any) -> Any:
+    """Remove control characters and odd values before sending provider JSON."""
+
+    if isinstance(value, str):
+        return _clean_provider_string(value)
+    if isinstance(value, list):
+        return [sanitize_for_provider(item) for item in value]
+    if isinstance(value, tuple):
+        return [sanitize_for_provider(item) for item in value]
+    if isinstance(value, dict):
+        return {
+            _clean_provider_string(str(key)): sanitize_for_provider(item)
+            for key, item in value.items()
+        }
+    return value
+
+
+def _clean_provider_string(value: str) -> str:
+    """Keep printable text while preserving normal whitespace."""
+
+    value = value.replace("\ufeff", "")
+    value = value.replace("\ufffd", "")
+    return re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", " ", value)
 
 
 def parse_model_json(content: str) -> dict[str, Any]:
