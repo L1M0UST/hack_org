@@ -46,6 +46,7 @@ def build_article_extract_variables(
     pg_group_ids: dict[str, str] | None = None,
     group_context: dict[str, dict[str, Any]] | None = None,
     max_candidate_groups: int = 12,
+    max_document_chars: int = 40000,
 ) -> dict[str, Any]:
     """Build prompt variables for article_extract from one normalized article."""
 
@@ -73,6 +74,12 @@ def build_article_extract_variables(
                 "latest_structure_overview": None,
             }
         )
+    text = article.text or ""
+    truncated_text, text_truncated = truncate_text_middle(text, max_document_chars)
+    metadata = dict(article.metadata)
+    metadata["original_text_chars"] = len(text)
+    metadata["text_truncated_for_model"] = text_truncated
+    metadata["model_text_chars"] = len(truncated_text)
     return {
         "document_json": {
             "document_id": article_id,
@@ -89,8 +96,8 @@ def build_article_extract_variables(
             "author": article.author,
             "language": article.metadata.get("language"),
             "content_type": article.metadata.get("collector_type", "article"),
-            "text": article.text,
-            "metadata": article.metadata,
+            "text": truncated_text,
+            "metadata": metadata,
         },
         "candidate_groups_json": candidate_groups,
         "existing_database_context_json": {"groups": context_groups},
@@ -143,3 +150,15 @@ def term_matches(term: str, text: str) -> bool:
             return any(context in window for context in required)
         return True
     return term.casefold() in text.casefold()
+
+
+def truncate_text_middle(text: str, max_chars: int) -> tuple[str, bool]:
+    """Keep the beginning and end of long source text for model extraction."""
+
+    if max_chars <= 0 or len(text) <= max_chars:
+        return text, False
+    marker = "\n\n[MODEL_INPUT_TRUNCATED: middle content omitted]\n\n"
+    keep = max(0, max_chars - len(marker))
+    head = keep // 2
+    tail = keep - head
+    return f"{text[:head]}{marker}{text[-tail:]}", True
