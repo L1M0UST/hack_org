@@ -202,27 +202,38 @@ class DailyPipeline:
             self.logger.log("storage", "INFO", "groups_synced_to_pg", "组织身份已同步到 PostgreSQL", groups=len(pg_group_ids))
             ingestor = ModelOutputIngestor(repository)
 
-            pending_extracts: list[dict[str, Any]] = []
+            document_rows: list[dict[str, Any]] = []
             for row in article_rows:
-                if article_limit is not None and len(pending_extracts) >= article_limit:
-                    break
-                summary.articles_seen += 1
                 article = article_models[row["id"]]
                 if article is None:
                     continue
                 pg_document_id = repository.upsert_collected_document(row)
-                if repository.has_successful_model_run("article_extract", pg_document_id):
-                    summary.articles_skipped += 1
-                    self.logger.log(
-                        "processing",
-                        "INFO",
-                        "article_extract_skipped",
-                        "文章已处理，跳过模型抽取",
-                        article_id=row["id"],
-                        document_id=pg_document_id,
-                        title=article.title,
-                    )
-                    continue
+                document_rows.append({"row": row, "article": article, "document_id": pg_document_id})
+            summary.articles_seen = len(document_rows)
+            successful_document_ids = repository.successful_model_run_document_ids(
+                "article_extract",
+                [item["document_id"] for item in document_rows],
+            )
+            pending_rows = [item for item in document_rows if item["document_id"] not in successful_document_ids]
+            summary.articles_skipped = len(document_rows) - len(pending_rows)
+            if article_limit is not None:
+                pending_rows = pending_rows[:article_limit]
+            self.logger.log(
+                "processing",
+                "INFO",
+                "article_extract_pending_selected",
+                "待抽取文章筛选完成",
+                articles_seen=summary.articles_seen,
+                already_successful=summary.articles_skipped,
+                pending_selected=len(pending_rows),
+                article_limit=article_limit,
+            )
+
+            pending_extracts: list[dict[str, Any]] = []
+            for item in pending_rows:
+                row = item["row"]
+                article = item["article"]
+                pg_document_id = item["document_id"]
                 variables = build_article_extract_variables(
                     pg_document_id,
                     article,

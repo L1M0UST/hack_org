@@ -294,6 +294,24 @@ class PostgresRepository:
                 raise ValueError("document_id is required for document-scoped model runs")
             return bool(cur.fetchone()[0])
 
+    def successful_model_run_document_ids(self, run_type: str, document_ids: list[str]) -> set[str]:
+        """Return document IDs that already have a successful model run."""
+
+        if not document_ids:
+            return set()
+        with self.conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT DISTINCT document_id
+                FROM model_runs
+                WHERE run_type = %s
+                  AND status = 'success'
+                  AND document_id = ANY(%s)
+                """,
+                (run_type, document_ids),
+            )
+            return {str(row[0]) for row in cur.fetchall() if row[0]}
+
     def document_backlog_summary(self) -> dict[str, Any]:
         """Return document processing backlog grouped by source."""
 
