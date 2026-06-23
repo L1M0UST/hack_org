@@ -7,7 +7,11 @@ import argparse
 import ftplib
 import json
 import os
+import re
 import subprocess
+import urllib.error
+import urllib.parse
+import urllib.request
 from fnmatch import fnmatch
 from pathlib import Path
 
@@ -166,9 +170,6 @@ def read_jsonl(path: Path) -> list[dict]:
 
 
 def apply_changes(changes: list[dict]) -> None:
-    table = os.environ.get("CLICKHOUSE_TABLE", "apt_group_distributed")
-    database = os.environ.get("CLICKHOUSE_DATABASE", "default")
-    full_table = f"{database}.{table}" if database else table
     columns = apt_columns()
     rows = []
     for change in changes:
@@ -179,17 +180,82 @@ def apply_changes(changes: list[dict]) -> None:
     if not rows:
         return
     payload = "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows)
+    interface = os.environ.get("CLICKHOUSE_INTERFACE", "http").casefold()
+    if interface == "native":
+        apply_changes_native(columns, payload)
+    elif interface == "http":
+        apply_changes_http(columns, payload)
+    else:
+        raise ValueError(f"unsupported CLICKHOUSE_INTERFACE: {interface}")
+
+
+def apply_changes_native(columns: list[str], payload: str) -> None:
+    """Insert rows through clickhouse-client native TCP protocol."""
+
     command = [
         "clickhouse-client",
         "--host", os.environ.get("CLICKHOUSE_HOST", "127.0.0.1"),
         "--port", os.environ.get("CLICKHOUSE_PORT", "9000"),
         "--user", os.environ.get("CLICKHOUSE_USER", "default"),
-        "--query", f"INSERT INTO {full_table} ({', '.join(columns)}) FORMAT JSONEachRow",
+        "--query", insert_query(columns),
     ]
     password = os.environ.get("CLICKHOUSE_PASSWORD")
     if password:
         command.extend(["--password", password])
     subprocess.run(command, input=payload, text=True, check=True)
+
+
+def apply_changes_http(columns: list[str], payload: str) -> None:
+    """Insert rows through ClickHouse HTTP interface, usually port 8123."""
+
+    protocol = os.environ.get("CLICKHOUSE_PROTOCOL", "http")
+    host = os.environ.get("CLICKHOUSE_HOST", "127.0.0.1")
+    port = os.environ.get("CLICKHOUSE_PORT", "8123")
+    timeout = int(os.environ.get("CLICKHOUSE_TIMEOUT", "60"))
+    url = f"{protocol}://{host}:{port}/?{urllib.parse.urlencode({'query': insert_query(columns)})}"
+    request = urllib.request.Request(
+        url,
+        data=payload.encode("utf-8"),
+        headers={
+            "Content-Type": "text/plain; charset=utf-8",
+            "X-ClickHouse-User": os.environ.get("CLICKHOUSE_USER", "default"),
+        },
+        method="POST",
+    )
+    password = os.environ.get("CLICKHOUSE_PASSWORD")
+    if password:
+        request.add_header("X-ClickHouse-Key", password)
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            response.read()
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="replace")
+        raise RuntimeError(f"ClickHouse HTTP insert failed: {exc.code} {body}") from exc
+
+
+def insert_query(columns: list[str]) -> str:
+    """Build a ClickHouse JSONEachRow insert statement."""
+
+    column_sql = ", ".join(quote_identifier(column) for column in columns)
+    return f"INSERT INTO {clickhouse_table_name()} ({column_sql}) FORMAT JSONEachRow"
+
+
+def clickhouse_table_name() -> str:
+    """Return a safely quoted ClickHouse table name."""
+
+    table = os.environ.get("CLICKHOUSE_TABLE", "apt_group_distributed")
+    database = os.environ.get("CLICKHOUSE_DATABASE", "default")
+    if database:
+        return f"{quote_identifier(database)}.{quote_identifier(table)}"
+    return quote_identifier(table)
+
+
+def quote_identifier(value: str) -> str:
+    """Quote simple ClickHouse identifiers and reject unsafe names."""
+
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", value):
+        raise ValueError(f"unsafe ClickHouse identifier: {value!r}")
+    return f"`{value}`"
 
 
 def normalize_value(value):

@@ -22,7 +22,10 @@ FTP_PASSWORD=password
 FTP_DIR=/spider/hack_org
 FTP_TLS=false
 CLICKHOUSE_HOST=127.0.0.1
-CLICKHOUSE_PORT=9000
+CLICKHOUSE_PORT=8123
+CLICKHOUSE_PROTOCOL=http
+CLICKHOUSE_INTERFACE=http
+CLICKHOUSE_TIMEOUT=60
 CLICKHOUSE_USER=default
 CLICKHOUSE_PASSWORD=
 CLICKHOUSE_DATABASE=default
@@ -41,5 +44,18 @@ SYNC_STATE_FILE=.sync_state.json
 By default the script scans `FTP_DIR` for `apt_group_changes_*.jsonl`, downloads each file, deletes the remote FTP file immediately after the download succeeds, records `last_seq` locally, skips already applied changes, then deletes the local downloaded file only after ClickHouse insert succeeds. Use `--remote-name apt_group_changes_xxx.jsonl` for one file, or `--keep-remote` / `--keep-local` if you want to retain files.
 
 The FTP directory is created automatically when the account has permission.
+
+ClickHouse insert uses HTTP by default:
+
+```sql
+INSERT INTO `default`.`apt_group_distributed` (...) FORMAT JSONEachRow
+```
+
+If you prefer `clickhouse-client` native TCP, set:
+
+```env
+CLICKHOUSE_INTERFACE=native
+CLICKHOUSE_PORT=9000
+```
 
 For update replay, `apt_group_distributed` should write into a `ReplacingMergeTree` local table keyed by `organization_code, apt_organization` with a version column such as `storage_time`; ordinary MergeTree tables will keep historical duplicates.
