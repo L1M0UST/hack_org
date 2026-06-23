@@ -175,13 +175,9 @@ def list_local_files(local_dir: Path, pattern: str) -> list[Path]:
 
 
 def pull_ftp(remote_name: str, local_path: Path) -> None:
-    temp_path = local_path.with_suffix(local_path.suffix + ".tmp")
-    if temp_path.exists():
-        temp_path.unlink()
     with connect_ftp() as ftp:
-        with temp_path.open("wb") as handle:
+        with local_path.open("wb") as handle:
             ftp.retrbinary(f"RETR {remote_name}", handle.write)
-    temp_path.replace(local_path)
 
 
 def delete_remote(remote_name: str) -> None:

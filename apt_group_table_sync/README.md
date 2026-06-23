@@ -43,7 +43,7 @@ SYNC_STATE_FILE=.sync_state.json
 .venv/bin/python sync_apt_group_from_ftp.py
 ```
 
-By default the script first replays local `incoming/apt_group_changes_*.jsonl` files left by earlier ClickHouse failures, then scans `FTP_DIR` for new files. It downloads each remote file to a temporary file first, renames it after the download succeeds, deletes the remote FTP file immediately after the successful download, records `last_seq` locally, skips already applied changes, then deletes the local file only after ClickHouse insert succeeds. If ClickHouse insert fails, the local JSONL file is kept and retried on the next run. Use `--remote-name apt_group_changes_xxx.jsonl` for one file, or `--keep-remote` / `--keep-local` if you want to retain files.
+By default the script first replays local `incoming/apt_group_changes_*.jsonl` files left by earlier ClickHouse failures, then scans `FTP_DIR` for new files. It downloads each remote file, deletes the remote FTP file immediately after the successful download, records `last_seq` locally, skips already applied changes, then deletes the local file only after ClickHouse insert succeeds. If ClickHouse insert fails, the local JSONL file is kept and retried on the next run. Use `--remote-name apt_group_changes_xxx.jsonl` for one file, or `--keep-remote` / `--keep-local` if you want to retain files.
 
 The FTP directory is created automatically when the account has permission.
 
