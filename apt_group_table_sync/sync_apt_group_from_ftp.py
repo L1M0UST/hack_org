@@ -42,6 +42,8 @@ DEFAULT_APT_COLUMNS = [
     "related_certificates",
 ]
 
+GENERATED_CLICKHOUSE_COLUMNS = {"storage_time"}
+
 
 def load_env_file(path: Path) -> None:
     """Load KEY=VALUE pairs from a local .env file without overriding env vars."""
@@ -269,7 +271,11 @@ def apply_changes_http(columns: list[str], payload: str) -> None:
     """Insert rows through ClickHouse HTTP interface, usually port 8123."""
 
     timeout = int(os.environ.get("CLICKHOUSE_TIMEOUT", "60"))
-    clickhouse_http_request(insert_query(columns), data=payload.encode("utf-8"), timeout=timeout).read()
+    query = insert_query(columns)
+    try:
+        clickhouse_http_request(query, data=payload.encode("utf-8"), timeout=timeout).read()
+    except RuntimeError as exc:
+        raise RuntimeError(f"{exc}; insert_columns={columns}") from exc
 
 
 def clickhouse_http_request(query: str, data: bytes | None = None, timeout: int | None = None):
@@ -356,7 +362,8 @@ def excluded_columns() -> set[str]:
     """Return columns that must not be inserted because ClickHouse generates them."""
 
     raw = os.environ.get("CLICKHOUSE_EXCLUDE_COLUMNS", "storage_time")
-    return {item.strip() for item in raw.split(",") if item.strip()}
+    configured = {item.strip() for item in raw.split(",") if item.strip()}
+    return GENERATED_CLICKHOUSE_COLUMNS | configured
 
 
 def clickhouse_table_columns() -> set[str]:
