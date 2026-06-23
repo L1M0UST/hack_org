@@ -12,6 +12,8 @@ python3 -m venv .venv
 
 ## Environment
 
+Create `.env` in this directory. The script automatically loads `.env` from the same directory as `sync_apt_group_from_ftp.py`.
+
 ```env
 FTP_HOST=1.2.3.4
 FTP_PORT=21

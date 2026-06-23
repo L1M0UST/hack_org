@@ -11,6 +11,9 @@ import subprocess
 from fnmatch import fnmatch
 from pathlib import Path
 
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+
 DEFAULT_APT_COLUMNS = [
     "apt_organization",
     "organization_code",
@@ -37,7 +40,24 @@ DEFAULT_APT_COLUMNS = [
 ]
 
 
+def load_env_file(path: Path) -> None:
+    """Load KEY=VALUE pairs from a local .env file without overriding env vars."""
+
+    if not path.exists():
+        return
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
 def main() -> None:
+    load_env_file(SCRIPT_DIR / ".env")
     parser = argparse.ArgumentParser()
     parser.add_argument("--remote-name", default=None)
     parser.add_argument("--pattern", default="apt_group_changes_*.jsonl")
