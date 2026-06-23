@@ -30,9 +30,11 @@ CLICKHOUSE_USER=default
 CLICKHOUSE_PASSWORD=
 CLICKHOUSE_DATABASE=default
 CLICKHOUSE_TABLE=apt_group_distributed
+CLICKHOUSE_AUTO_COLUMNS=true
+CLICKHOUSE_EXCLUDE_COLUMNS=storage_time
 SYNC_STATE_FILE=.sync_state.json
 # Optional: set this if your ClickHouse table has extra columns such as source_evidence.
-# APT_GROUP_COLUMNS=apt_organization,organization_code,team_name,...,source_evidence,storage_time
+# APT_GROUP_COLUMNS=apt_organization,organization_code,team_name,...,source_evidence
 ```
 
 ## Run
@@ -51,6 +53,8 @@ ClickHouse insert uses HTTP by default:
 INSERT INTO `default`.`apt_group_distributed` (...) FORMAT JSONEachRow
 ```
 
+With `CLICKHOUSE_AUTO_COLUMNS=true`, the script runs `DESCRIBE TABLE` first and inserts only columns that exist in `apt_group_distributed`. `storage_time` is excluded by default because the ClickHouse local table generates it automatically.
+
 If you prefer `clickhouse-client` native TCP, set:
 
 ```env
@@ -58,4 +62,4 @@ CLICKHOUSE_INTERFACE=native
 CLICKHOUSE_PORT=9000
 ```
 
-For update replay, `apt_group_distributed` should write into a `ReplacingMergeTree` local table keyed by `organization_code, apt_organization` with a server-generated version column such as `storage_time`; the sync script does not insert `storage_time`. Ordinary MergeTree tables will keep historical duplicates.
+For update replay, `apt_group_distributed` should write into a `ReplacingReplicatedMergeTree` / `ReplacingMergeTree` local table keyed by `apt_organization` or `(organization_code, apt_organization)` with a server-generated version column such as `storage_time`; the sync script inserts new replacement versions and does not insert `storage_time`. Ordinary MergeTree tables will keep historical duplicates.

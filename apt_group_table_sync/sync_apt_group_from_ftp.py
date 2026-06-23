@@ -169,15 +169,16 @@ def read_jsonl(path: Path) -> list[dict]:
 
 
 def apply_changes(changes: list[dict]) -> None:
-    columns = apt_columns()
     rows = []
     for change in changes:
         row = change.get("new_row")
         if not row or change.get("operation") == "delete":
             continue
-        rows.append({column: normalize_value(row.get(column)) for column in columns})
+        rows.append(row)
     if not rows:
         return
+    columns = apt_columns(rows)
+    rows = [{column: normalize_value(row.get(column)) for column in columns} for row in rows]
     payload = "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows)
     interface = os.environ.get("CLICKHOUSE_INTERFACE", "http").casefold()
     if interface == "native":
@@ -207,14 +208,21 @@ def apply_changes_native(columns: list[str], payload: str) -> None:
 def apply_changes_http(columns: list[str], payload: str) -> None:
     """Insert rows through ClickHouse HTTP interface, usually port 8123."""
 
+    timeout = int(os.environ.get("CLICKHOUSE_TIMEOUT", "60"))
+    clickhouse_http_request(insert_query(columns), data=payload.encode("utf-8"), timeout=timeout).read()
+
+
+def clickhouse_http_request(query: str, data: bytes | None = None, timeout: int | None = None):
+    """Run one ClickHouse HTTP query and return the response object."""
+
     protocol = os.environ.get("CLICKHOUSE_PROTOCOL", "http")
     host = os.environ.get("CLICKHOUSE_HOST", "127.0.0.1")
     port = os.environ.get("CLICKHOUSE_PORT", "8123")
-    timeout = int(os.environ.get("CLICKHOUSE_TIMEOUT", "60"))
-    url = f"{protocol}://{host}:{port}/?{urllib.parse.urlencode({'query': insert_query(columns)})}"
+    timeout = timeout or int(os.environ.get("CLICKHOUSE_TIMEOUT", "60"))
+    url = f"{protocol}://{host}:{port}/?{urllib.parse.urlencode({'query': query})}"
     request = urllib.request.Request(
         url,
-        data=payload.encode("utf-8"),
+        data=data,
         headers={
             "Content-Type": "text/plain; charset=utf-8",
             "X-ClickHouse-User": os.environ.get("CLICKHOUSE_USER", "default"),
@@ -225,11 +233,10 @@ def apply_changes_http(columns: list[str], payload: str) -> None:
     if password:
         request.add_header("X-ClickHouse-Key", password)
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            response.read()
+        return urllib.request.urlopen(request, timeout=timeout)
     except urllib.error.HTTPError as exc:
         body = exc.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"ClickHouse HTTP insert failed: {exc.code} {body}") from exc
+        raise RuntimeError(f"ClickHouse HTTP query failed: {exc.code} {body}") from exc
 
 
 def insert_query(columns: list[str]) -> str:
@@ -263,11 +270,46 @@ def normalize_value(value):
     return str(value)
 
 
-def apt_columns() -> list[str]:
+def apt_columns(rows: list[dict] | None = None) -> list[str]:
     raw = os.environ.get("APT_GROUP_COLUMNS")
     if not raw:
-        return DEFAULT_APT_COLUMNS
-    return [item.strip() for item in raw.split(",") if item.strip()]
+        columns = DEFAULT_APT_COLUMNS
+    else:
+        columns = [item.strip() for item in raw.split(",") if item.strip()]
+    columns = [column for column in columns if column not in excluded_columns()]
+    if os.environ.get("CLICKHOUSE_AUTO_COLUMNS", "true").casefold() not in {"1", "true", "yes"}:
+        return columns
+    table_columns = clickhouse_table_columns()
+    if not table_columns:
+        return columns
+    available = [column for column in columns if column in table_columns]
+    if rows:
+        for column in DEFAULT_APT_COLUMNS:
+            if column in table_columns and column not in available and any(column in row for row in rows):
+                available.append(column)
+    if not available:
+        raise RuntimeError("No matching ClickHouse columns found for apt_group export rows")
+    return available
+
+
+def excluded_columns() -> set[str]:
+    """Return columns that must not be inserted because ClickHouse generates them."""
+
+    raw = os.environ.get("CLICKHOUSE_EXCLUDE_COLUMNS", "storage_time")
+    return {item.strip() for item in raw.split(",") if item.strip()}
+
+
+def clickhouse_table_columns() -> set[str]:
+    """Fetch target table columns through HTTP when enabled."""
+
+    if os.environ.get("CLICKHOUSE_INTERFACE", "http").casefold() != "http":
+        return set()
+    try:
+        with clickhouse_http_request(f"DESCRIBE TABLE {clickhouse_table_name()} FORMAT JSON") as response:
+            payload = json.loads(response.read().decode("utf-8"))
+        return {str(item["name"]) for item in payload.get("data", [])}
+    except Exception:
+        return set()
 
 
 def load_last_seq(path: Path) -> int:
