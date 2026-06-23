@@ -73,29 +73,59 @@ def main() -> None:
 
     local_dir = Path(args.local_dir)
     local_dir.mkdir(parents=True, exist_ok=True)
-    remote_names = [args.remote_name] if args.remote_name else list_remote_files(args.pattern)
-    if not remote_names:
-        print(json.dumps({"files": 0, "applied": 0, "last_seq": load_last_seq(Path(args.state_file))}, ensure_ascii=False))
-        return
+    state_path = Path(args.state_file)
+    last_seq = load_last_seq(state_path)
     total_applied = 0
-    last_seq = load_last_seq(Path(args.state_file))
+
+    local_paths = list_local_files(local_dir, args.pattern)
+    processed_local = 0
+    for local_path in local_paths:
+        applied, last_seq = process_local_file(
+            local_path,
+            last_seq,
+            state_path,
+            keep_local=args.keep_local,
+            dry_run=args.dry_run,
+        )
+        total_applied += applied
+        processed_local += 1
+
+    remote_names = [args.remote_name] if args.remote_name else list_remote_files(args.pattern)
+    local_names = {path.name for path in local_paths}
+    remote_names = [name for name in remote_names if Path(name).name not in local_names]
+    if not remote_names and processed_local == 0:
+        print(
+            json.dumps(
+                {"local_files": 0, "remote_files": 0, "applied": 0, "last_seq": last_seq},
+                ensure_ascii=False,
+            )
+        )
+        return
+
     for remote_name in remote_names:
         local_path = local_dir / Path(remote_name).name
         pull_ftp(remote_name, local_path)
         if not args.keep_remote and not args.dry_run:
             delete_remote(remote_name)
-        changes = [row for row in read_jsonl(local_path) if int(row["change_seq"]) > last_seq]
-        if changes:
-            file_last_seq = max(int(row["change_seq"]) for row in changes)
-            if not args.dry_run:
-                apply_changes(changes)
-                save_last_seq(Path(args.state_file), file_last_seq)
-                cleanup_local(local_path, keep_local=args.keep_local)
-            last_seq = file_last_seq
-            total_applied += len(changes)
-        elif not args.dry_run:
-            cleanup_local(local_path, keep_local=args.keep_local)
-    print(json.dumps({"files": len(remote_names), "applied": total_applied, "last_seq": last_seq}, ensure_ascii=False))
+        applied, last_seq = process_local_file(
+            local_path,
+            last_seq,
+            state_path,
+            keep_local=args.keep_local,
+            dry_run=args.dry_run,
+        )
+        total_applied += applied
+    print(
+        json.dumps(
+            {
+                "local_files": processed_local,
+                "remote_files": len(remote_names),
+                "applied": total_applied,
+                "last_seq": last_seq,
+            },
+            ensure_ascii=False,
+        )
+    )
 
 
 def connect_ftp():
@@ -138,10 +168,20 @@ def list_remote_files(pattern: str) -> list[str]:
     return sorted(name for name in names if fnmatch(Path(name).name, pattern))
 
 
+def list_local_files(local_dir: Path, pattern: str) -> list[Path]:
+    """List complete local change files left from previous runs."""
+
+    return sorted(path for path in local_dir.iterdir() if path.is_file() and fnmatch(path.name, pattern))
+
+
 def pull_ftp(remote_name: str, local_path: Path) -> None:
+    temp_path = local_path.with_suffix(local_path.suffix + ".tmp")
+    if temp_path.exists():
+        temp_path.unlink()
     with connect_ftp() as ftp:
-        with local_path.open("wb") as handle:
+        with temp_path.open("wb") as handle:
             ftp.retrbinary(f"RETR {remote_name}", handle.write)
+    temp_path.replace(local_path)
 
 
 def delete_remote(remote_name: str) -> None:
@@ -166,6 +206,30 @@ def read_jsonl(path: Path) -> list[dict]:
             if line:
                 rows.append(json.loads(line))
     return rows
+
+
+def process_local_file(
+    local_path: Path,
+    last_seq: int,
+    state_path: Path,
+    *,
+    keep_local: bool,
+    dry_run: bool,
+) -> tuple[int, int]:
+    """Replay one local JSONL file, deleting it only after a successful insert."""
+
+    changes = [row for row in read_jsonl(local_path) if int(row["change_seq"]) > last_seq]
+    if not changes:
+        if not dry_run:
+            cleanup_local(local_path, keep_local=keep_local)
+        return 0, last_seq
+
+    file_last_seq = max(int(row["change_seq"]) for row in changes)
+    if not dry_run:
+        apply_changes(changes)
+        save_last_seq(state_path, file_last_seq)
+        cleanup_local(local_path, keep_local=keep_local)
+    return len(changes), file_last_seq
 
 
 def apply_changes(changes: list[dict]) -> None:
