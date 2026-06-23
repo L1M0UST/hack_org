@@ -58,4 +58,4 @@ CLICKHOUSE_INTERFACE=native
 CLICKHOUSE_PORT=9000
 ```
 
-For update replay, `apt_group_distributed` should write into a `ReplacingMergeTree` local table keyed by `organization_code, apt_organization` with a version column such as `storage_time`; ordinary MergeTree tables will keep historical duplicates.
+For update replay, `apt_group_distributed` should write into a `ReplacingMergeTree` local table keyed by `organization_code, apt_organization` with a server-generated version column such as `storage_time`; the sync script does not insert `storage_time`. Ordinary MergeTree tables will keep historical duplicates.

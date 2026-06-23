@@ -40,7 +40,6 @@ DEFAULT_APT_COLUMNS = [
     "associative_ip",
     "associative_url",
     "related_certificates",
-    "storage_time",
 ]
 
 
