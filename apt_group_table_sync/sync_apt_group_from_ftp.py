@@ -59,17 +59,19 @@ def main() -> None:
     for remote_name in remote_names:
         local_path = local_dir / Path(remote_name).name
         pull_ftp(remote_name, local_path)
+        if not args.keep_remote and not args.dry_run:
+            delete_remote(remote_name)
         changes = [row for row in read_jsonl(local_path) if int(row["change_seq"]) > last_seq]
         if changes:
             file_last_seq = max(int(row["change_seq"]) for row in changes)
             if not args.dry_run:
                 apply_changes(changes)
                 save_last_seq(Path(args.state_file), file_last_seq)
-                cleanup(remote_name, local_path, keep_remote=args.keep_remote, keep_local=args.keep_local)
+                cleanup_local(local_path, keep_local=args.keep_local)
             last_seq = file_last_seq
             total_applied += len(changes)
         elif not args.dry_run:
-            cleanup(remote_name, local_path, keep_remote=args.keep_remote, keep_local=args.keep_local)
+            cleanup_local(local_path, keep_local=args.keep_local)
     print(json.dumps({"files": len(remote_names), "applied": total_applied, "last_seq": last_seq}, ensure_ascii=False))
 
 
@@ -119,10 +121,16 @@ def pull_ftp(remote_name: str, local_path: Path) -> None:
             ftp.retrbinary(f"RETR {remote_name}", handle.write)
 
 
-def cleanup(remote_name: str, local_path: Path, *, keep_remote: bool, keep_local: bool) -> None:
-    if not keep_remote:
-        with connect_ftp() as ftp:
-            ftp.delete(remote_name)
+def delete_remote(remote_name: str) -> None:
+    """Delete one remote FTP file."""
+
+    with connect_ftp() as ftp:
+        ftp.delete(remote_name)
+
+
+def cleanup_local(local_path: Path, *, keep_local: bool) -> None:
+    """Delete one local file unless retention was requested."""
+
     if not keep_local and local_path.exists():
         local_path.unlink()
 
