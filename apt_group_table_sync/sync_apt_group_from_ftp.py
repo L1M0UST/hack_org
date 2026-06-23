@@ -8,6 +8,7 @@ import ftplib
 import json
 import os
 import subprocess
+from fnmatch import fnmatch
 from pathlib import Path
 
 DEFAULT_APT_COLUMNS = [
@@ -38,7 +39,8 @@ DEFAULT_APT_COLUMNS = [
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--remote-name", required=True)
+    parser.add_argument("--remote-name", default=None)
+    parser.add_argument("--pattern", default="apt_group_changes_*.jsonl")
     parser.add_argument("--local-dir", default="incoming")
     parser.add_argument("--state-file", default=os.environ.get("SYNC_STATE_FILE", ".sync_state.json"))
     parser.add_argument("--keep-remote", action="store_true")
@@ -48,20 +50,27 @@ def main() -> None:
 
     local_dir = Path(args.local_dir)
     local_dir.mkdir(parents=True, exist_ok=True)
-    local_path = local_dir / args.remote_name
-    pull_ftp(args.remote_name, local_path)
-    last_seq = load_last_seq(Path(args.state_file))
-    changes = [row for row in read_jsonl(local_path) if int(row["change_seq"]) > last_seq]
-    if not changes:
-        if not args.dry_run:
-            cleanup(args.remote_name, local_path, keep_remote=args.keep_remote, keep_local=args.keep_local)
-        print(json.dumps({"applied": 0, "last_seq": last_seq}, ensure_ascii=False))
+    remote_names = [args.remote_name] if args.remote_name else list_remote_files(args.pattern)
+    if not remote_names:
+        print(json.dumps({"files": 0, "applied": 0, "last_seq": load_last_seq(Path(args.state_file))}, ensure_ascii=False))
         return
-    if not args.dry_run:
-        apply_changes(changes)
-        save_last_seq(Path(args.state_file), max(int(row["change_seq"]) for row in changes))
-        cleanup(args.remote_name, local_path, keep_remote=args.keep_remote, keep_local=args.keep_local)
-    print(json.dumps({"applied": len(changes), "last_seq": max(int(row["change_seq"]) for row in changes)}, ensure_ascii=False))
+    total_applied = 0
+    last_seq = load_last_seq(Path(args.state_file))
+    for remote_name in remote_names:
+        local_path = local_dir / Path(remote_name).name
+        pull_ftp(remote_name, local_path)
+        changes = [row for row in read_jsonl(local_path) if int(row["change_seq"]) > last_seq]
+        if changes:
+            file_last_seq = max(int(row["change_seq"]) for row in changes)
+            if not args.dry_run:
+                apply_changes(changes)
+                save_last_seq(Path(args.state_file), file_last_seq)
+                cleanup(remote_name, local_path, keep_remote=args.keep_remote, keep_local=args.keep_local)
+            last_seq = file_last_seq
+            total_applied += len(changes)
+        elif not args.dry_run:
+            cleanup(remote_name, local_path, keep_remote=args.keep_remote, keep_local=args.keep_local)
+    print(json.dumps({"files": len(remote_names), "applied": total_applied, "last_seq": last_seq}, ensure_ascii=False))
 
 
 def connect_ftp():
@@ -74,8 +83,34 @@ def connect_ftp():
         ftp.prot_p()
     remote_dir = os.environ.get("FTP_DIR", "")
     if remote_dir:
-        ftp.cwd(remote_dir)
+        ensure_ftp_dir(ftp, remote_dir)
     return ftp
+
+
+def ensure_ftp_dir(ftp: ftplib.FTP, remote_dir: str) -> None:
+    """Create an FTP directory tree if it does not exist, then cwd into it."""
+
+    normalized = remote_dir.replace("\\", "/").strip()
+    if not normalized or normalized == ".":
+        return
+    is_absolute = normalized.startswith("/")
+    parts = [part for part in normalized.split("/") if part]
+    if is_absolute:
+        ftp.cwd("/")
+    for part in parts:
+        try:
+            ftp.cwd(part)
+        except ftplib.error_perm:
+            ftp.mkd(part)
+            ftp.cwd(part)
+
+
+def list_remote_files(pattern: str) -> list[str]:
+    """List remote change files matching a shell-style pattern."""
+
+    with connect_ftp() as ftp:
+        names = ftp.nlst()
+    return sorted(name for name in names if fnmatch(Path(name).name, pattern))
 
 
 def pull_ftp(remote_name: str, local_path: Path) -> None:

@@ -17,7 +17,7 @@ FTP_HOST=1.2.3.4
 FTP_PORT=21
 FTP_USER=user
 FTP_PASSWORD=password
-FTP_DIR=/apt_group
+FTP_DIR=/spider/hack_org
 FTP_TLS=false
 CLICKHOUSE_HOST=127.0.0.1
 CLICKHOUSE_PORT=9000
@@ -33,9 +33,11 @@ SYNC_STATE_FILE=.sync_state.json
 ## Run
 
 ```bash
-.venv/bin/python sync_apt_group_from_ftp.py --remote-name apt_group_changes.jsonl
+.venv/bin/python sync_apt_group_from_ftp.py
 ```
 
-The script records `last_seq` locally, skips already applied changes, then deletes the remote FTP file and local downloaded file only after ClickHouse insert succeeds. Use `--keep-remote` or `--keep-local` if you want to retain files.
+By default the script scans `FTP_DIR` for `apt_group_changes_*.jsonl`, records `last_seq` locally, skips already applied changes, then deletes each remote FTP file and local downloaded file only after ClickHouse insert succeeds. Use `--remote-name apt_group_changes_xxx.jsonl` for one file, or `--keep-remote` / `--keep-local` if you want to retain files.
+
+The FTP directory is created automatically when the account has permission.
 
 For update replay, `apt_group_distributed` should write into a `ReplacingMergeTree` local table keyed by `organization_code, apt_organization` with a version column such as `storage_time`; ordinary MergeTree tables will keep historical duplicates.

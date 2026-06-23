@@ -127,11 +127,11 @@ def main() -> None:
     send_apt_ftp.add_argument("--remote-name", default=None)
     send_apt_ftp.add_argument("--english-headers", action="store_true")
     export_changes = sub.add_parser("export_apt_group_changes")
-    export_changes.add_argument("--after-seq", type=int, default=0)
+    export_changes.add_argument("--after-seq", type=_int_or_zero, default=0)
     export_changes.add_argument("--limit", type=int, default=None)
     export_changes.add_argument("--output", default=".state/apt_group_changes.jsonl")
     send_changes = sub.add_parser("send_apt_group_changes_sftp")
-    send_changes.add_argument("--after-seq", type=int, default=0)
+    send_changes.add_argument("--after-seq", type=_int_or_zero, default=0)
     send_changes.add_argument("--limit", type=int, default=None)
     send_changes.add_argument("--output", default=".state/sftp/apt_group_changes.jsonl")
     send_changes.add_argument("--remote-name", default=None)
@@ -563,7 +563,10 @@ def _send_file_sftp(local_path: Path, remote_name: str, env_path: Path) -> None:
         with paramiko.SFTPClient.from_transport(transport) as sftp:
             if remote_dir:
                 _ensure_sftp_dir(sftp, remote_dir)
-            sftp.put(str(local_path), remote_name)
+            remote_parent, final_name = _split_remote_name(remote_name)
+            if remote_parent:
+                _ensure_sftp_dir(sftp, remote_parent)
+            sftp.put(str(local_path), final_name)
     finally:
         transport.close()
 
@@ -620,9 +623,53 @@ def _send_file_ftp(local_path: Path, remote_name: str, env_path: Path) -> None:
         if use_tls:
             ftp.prot_p()
         if remote_dir:
-            ftp.cwd(remote_dir)
+            _ensure_ftp_dir(ftp, remote_dir)
+        remote_parent, final_name = _split_remote_name(remote_name)
+        if remote_parent:
+            _ensure_ftp_dir(ftp, remote_parent)
         with local_path.open("rb") as handle:
-            ftp.storbinary(f"STOR {remote_name}", handle)
+            ftp.storbinary(f"STOR {final_name}", handle)
+
+
+def _split_remote_name(remote_name: str) -> tuple[str, str]:
+    """Split a remote path into parent directory and basename."""
+
+    normalized = remote_name.replace("\\", "/").strip()
+    if "/" not in normalized:
+        return "", normalized
+    parent, _, name = normalized.rpartition("/")
+    if not name:
+        raise ValueError(f"remote file name is empty: {remote_name}")
+    return parent, name
+
+
+def _ensure_ftp_dir(ftp: ftplib.FTP, remote_dir: str) -> None:
+    """Create an FTP directory tree if it does not exist, then cwd into it."""
+
+    normalized = remote_dir.replace("\\", "/").strip()
+    if not normalized or normalized == ".":
+        return
+    is_absolute = normalized.startswith("/")
+    parts = [part for part in normalized.split("/") if part]
+    if is_absolute:
+        ftp.cwd("/")
+    for part in parts:
+        try:
+            ftp.cwd(part)
+        except ftplib.error_perm:
+            ftp.mkd(part)
+            ftp.cwd(part)
+
+
+def _int_or_zero(value) -> int:
+    """Parse optional sequence arguments; treat empty cron state as zero."""
+
+    if value is None:
+        return 0
+    text = str(value).strip()
+    if not text:
+        return 0
+    return int(text)
 
 def _sync_groups_json(state_dir: Path, store: StateStore) -> None:
     write_json(state_dir / "groups.json", [group.model_dump() for group in store.group_profiles()])
