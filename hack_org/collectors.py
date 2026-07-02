@@ -43,6 +43,8 @@ class Collector:
     def collect(self, source: SourceConfig, limit: int = 50) -> list[Article]:
         """Collect articles for one source."""
 
+        if source.api_key_env and not os.environ.get(source.api_key_env):
+            raise SourceSkipped(f"missing required source credential env var: {source.api_key_env}")
         source_limit = min(limit, source.max_items) if source.max_items else limit
         if source.type == "rss":
             return self._collect_rss(source, source_limit)
@@ -250,6 +252,10 @@ def _response_text(response: httpx.Response) -> str:
 
 class KnownUrlSkipped(Exception):
     """Raised internally when a one-document source URL is already collected."""
+
+
+class SourceSkipped(Exception):
+    """Raised internally when a source is intentionally skipped for configuration reasons."""
 
 
 def _article(source: SourceConfig, title: str, url: str, published_at, text: str, paths: dict[str, str], metadata: dict) -> Article:

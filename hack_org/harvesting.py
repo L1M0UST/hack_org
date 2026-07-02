@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from .artifact_store import ArtifactStore, LocalArtifactStore
-from .collectors import Collector, KnownUrlSkipped
+from .collectors import Collector, KnownUrlSkipped, SourceSkipped
 from .logging_system import DailyLogger
 from .llm_inputs import candidate_groups_for_article, term_matches
 from .models import Article, GroupProfile, SourceConfig
@@ -76,6 +76,7 @@ class HarvestManager:
             "collected": 0,
             "inserted": 0,
             "duplicates": 0,
+            "skipped": 0,
             "failed": 0,
         }
         run_ids = {source.id: self.store.start_collection_run(source.id) for source in enabled}
@@ -186,6 +187,22 @@ class HarvestManager:
                         details={"collected": len(articles), "inserted": inserted, "duplicates": duplicates},
                     )
                 except Exception as exc:
+                    if isinstance(exc, SourceSkipped):
+                        self.store.finish_collection_run(run_ids[source.id], "skipped", error=str(exc))
+                        summary["skipped"] += 1
+                        self.logger.log(
+                            "collection",
+                            "WARNING",
+                            "source_config_skipped",
+                            "数据源因配置条件未满足而跳过",
+                            source_id=source.id,
+                            source_name=source.name,
+                            source_type=source.type,
+                            source_tier=source.tier,
+                            source_category=source.category,
+                            reason=str(exc),
+                        )
+                        continue
                     if isinstance(exc, KnownUrlSkipped):
                         self.store.finish_collection_run(run_ids[source.id], "success", 0, 0, 1)
                         summary["duplicates"] += 1
@@ -234,6 +251,7 @@ class HarvestManager:
             "documents_collected": summary["collected"],
             "documents_inserted": summary["inserted"],
             "documents_duplicate": summary["duplicates"],
+            "sources_skipped": summary["skipped"],
             "sources_failed": summary["failed"],
         }.items():
             self.logger.count(key, value)

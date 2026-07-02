@@ -57,6 +57,8 @@ class DailyReportBuilder:
                 "failed_run_count": local["failed_run_count"],
                 "failed_source_count": local["failed_source_count"],
                 "failed_sources": local["failed_sources"],
+                "skipped_run_count": local["skipped_run_count"],
+                "skipped_sources": local["skipped_sources"],
                 "source_failure_streaks": local["source_failure_streaks"],
             },
             "processing": {
@@ -102,8 +104,12 @@ class DailyReportBuilder:
             "documents_inserted": sum(row["inserted_count"] for row in rows),
             "documents_duplicate": sum(row["duplicate_count"] for row in rows),
             "failed_run_count": sum(1 for row in rows if row["status"] == "failed"),
+            "skipped_run_count": sum(1 for row in rows if row["status"] == "skipped"),
             "failed_sources": sorted(
                 {row["source_id"] for row in rows if row["status"] == "failed" and row["source_id"]}
+            ),
+            "skipped_sources": sorted(
+                {row["source_id"] for row in rows if row["status"] == "skipped" and row["source_id"]}
             ),
         }
         metrics["source_failure_streaks"] = self._source_failure_streaks(day)

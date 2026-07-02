@@ -185,7 +185,7 @@ sources:
     name: The Record by Recorded Future News
     type: rss
     url: https://therecord.media/feed
-    enabled: true
+    enabled: false
     weight: 0.82
     category: security_news
     tier: B
@@ -605,7 +605,7 @@ sources:
     name: Sekoia.io Blog
     type: rss
     url: https://blog.sekoia.io/feed/
-    enabled: true
+    enabled: false
     weight: 0.84
     category: fr_vendor_threat_research
     tier: A
@@ -617,7 +617,7 @@ sources:
     name: HarfangLab Inside The Lab
     type: webpage
     url: https://harfanglab.io/insidethelab/
-    enabled: true
+    enabled: false
     weight: 0.76
     category: fr_vendor_threat_research
     tier: B
@@ -640,7 +640,7 @@ sources:
   - id: enisa_threat_landscape
     name: ENISA Threat Landscape
     type: webpage
-    url: https://tools.enisa.europa.eu/topics/cyber-threats/threats-and-trends/enisa-threat-landscape
+    url: https://www.enisa.europa.eu/publications/enisa-threat-landscape-2025
     enabled: true
     weight: 0.76
     category: eu_government_report
@@ -779,6 +779,8 @@ sources:
   - id: alienvault_otx
     name: OTX??????
     type: api_json
+    api_key_env: OTX_API_KEY
+    auth_header: X-OTX-API-KEY
     url: https://otx.alienvault.com/api/v1/search/pulses?q=APT&limit=50
     enabled: true
     weight: 1.0
@@ -806,7 +808,7 @@ sources:
     name: MISP???????
     type: webpage
     url: https://www.circl.lu/services/misp-malware-ioc
-    enabled: true
+    enabled: false
     weight: 0.9
     category: structured_api
     tier: A
@@ -819,7 +821,7 @@ sources:
     name: ??ETDA???????
     type: api_json
     url: https://apt.etda.or.th/cgi-bin/listgroups.cgi
-    enabled: true
+    enabled: false
     weight: 0.9
     category: knowledge_base
     tier: A
@@ -910,7 +912,7 @@ sources:
     name: ???APT????
     type: webpage
     url: https://attackerkb.com
-    enabled: true
+    enabled: false
     weight: 0.55
     category: structured_api
     tier: B
@@ -961,7 +963,7 @@ sources:
   - id: cisco_talos
     name: ??Talos????
     type: rss
-    url: https://blog.talosintelligence.com/rss.xml
+    url: https://feeds.feedburner.com/feedburner/Talos
     enabled: true
     weight: 1.0
     category: vendor_threat_research
@@ -986,14 +988,14 @@ sources:
 
   - id: recorded_future
     name: Recorded Future Insikt Group
-    type: rss
-    url: https://www.recordedfuture.com/blog/rss.xml
+    type: webpage
+    url: https://www.recordedfuture.com/research
     enabled: true
     weight: 0.9
     category: vendor_threat_research
     tier: A
     priority: P1
-    max_items: 20
+    max_items: 1
     fetch_full_article: true
     keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
 
@@ -1052,7 +1054,7 @@ sources:
   - id: symantec_tig
     name: ????????
     type: rss
-    url: https://symantec-enterprise-blogs.security.com/blogs/threat-intelligence/rss
+    url: https://www.security.com/rss/v1/blogs/rss.xml
     enabled: true
     weight: 0.9
     category: vendor_threat_research
@@ -1064,14 +1066,14 @@ sources:
 
   - id: dragos
     name: Dragos??????
-    type: rss
-    url: https://www.dragos.com/feed/
+    type: webpage
+    url: https://www.dragos.com/resources
     enabled: true
     weight: 0.9
     category: vendor_threat_research
     tier: A
     priority: P1
-    max_items: 20
+    max_items: 1
     fetch_full_article: true
     keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
 
@@ -1103,14 +1105,14 @@ sources:
 
   - id: team_cymru
     name: Cymru??
-    type: rss
-    url: https://www.team-cymru.com/blog/feed/
+    type: webpage
+    url: https://www.team-cymru.com/blog
     enabled: true
     weight: 0.75
     category: vendor_threat_research
     tier: B
     priority: P2
-    max_items: 20
+    max_items: 1
     fetch_full_article: true
     keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
 
@@ -1131,7 +1133,7 @@ sources:
     name: Sophos X-Ops
     type: rss
     url: https://news.sophos.com/en-us/feed/
-    enabled: true
+    enabled: false
     weight: 0.75
     category: vendor_threat_research
     tier: B
@@ -1142,22 +1144,22 @@ sources:
 
   - id: zscaler_threatlabz
     name: Zscaler ThreatLabz
-    type: rss
-    url: https://www.zscaler.com/blogs/rss.xml
+    type: webpage
+    url: https://www.zscaler.com/blogs/security-research
     enabled: true
     weight: 0.75
     category: vendor_threat_research
     tier: B
     priority: P2
-    max_items: 20
+    max_items: 1
     fetch_full_article: true
     keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
 
   - id: socradar
     name: SOCRadar APT????
     type: webpage
-    url: https://socradar.io/labs
-    enabled: true
+    url: https://socradar.io/free-tools/threat-actor
+    enabled: false
     weight: 0.75
     category: platform
     tier: B
@@ -1170,7 +1172,7 @@ sources:
     name: Trellix????
     type: rss
     url: https://www.trellix.com/feed/
-    enabled: true
+    enabled: false
     weight: 0.75
     category: vendor_threat_research
     tier: B
@@ -1181,27 +1183,27 @@ sources:
 
   - id: anomali
     name: Anomali????
-    type: rss
-    url: https://www.anomali.com/rss.xml
+    type: webpage
+    url: https://www.anomali.com/blog
     enabled: true
     weight: 0.55
     category: vendor_threat_research
     tier: B
     priority: P3
-    max_items: 20
+    max_items: 1
     fetch_full_article: true
     keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
 
   - id: cncert
     name: ?????????
-    type: rss
-    url: https://www.cert.org.cn/publish/main/12/index.xml
+    type: webpage
+    url: https://www.cert.org.cn/publish/main/11/index.html
     enabled: true
     weight: 1.0
     category: government
     tier: A
     priority: P0
-    max_items: 20
+    max_items: 1
     fetch_full_article: true
     keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
 
@@ -1221,7 +1223,7 @@ sources:
   - id: qianxin_ti
     name: ?????????
     type: webpage
-    url: https://www.qianxin.com/threat/report
+    url: https://en.qianxin.com/threat/reportaptlist
     enabled: true
     weight: 1.0
     category: vendor_threat_research
@@ -1260,7 +1262,7 @@ sources:
   - id: ti360_anquanke
     name: 360???APT????
     type: webpage
-    url: https://www.anquanke.com/source/id/1697
+    url: https://360.cn/news.html
     enabled: true
     weight: 1.0
     category: news_media
@@ -1286,7 +1288,7 @@ sources:
   - id: antiy_labs
     name: ????????
     type: webpage
-    url: https://www.antiy.com/response
+    url: https://www.antiy.cn/research/notice%26report/research_report/APT.html
     enabled: true
     weight: 0.9
     category: vendor_threat_research
@@ -1299,7 +1301,7 @@ sources:
   - id: nsfocus_ti
     name: ????????
     type: webpage
-    url: https://www.nsfocus.com.cn/html/2021/153_0209/135.html
+    url: https://www.nsfocus.com.cn/html/4/90/541/
     enabled: true
     weight: 0.75
     category: vendor_threat_research
@@ -1326,7 +1328,7 @@ sources:
     name: ????????
     type: webpage
     url: https://www.sangfor.com.cn/topic/security-lab
-    enabled: true
+    enabled: false
     weight: 0.55
     category: vendor_threat_research
     tier: B
@@ -1339,7 +1341,7 @@ sources:
     name: ???? / ???
     type: rss
     url: https://www.secrss.com/rss.xml
-    enabled: true
+    enabled: false
     weight: 0.9
     category: news_media
     tier: A
@@ -1377,7 +1379,7 @@ sources:
   - id: solar_jsoc
     name: ?????Solar JSOC
     type: webpage
-    url: https://rt-solar.ru/en/analytics
+    url: https://rt-solar.ru/analytics/reports/
     enabled: true
     weight: 0.75
     category: vendor_threat_research
@@ -1402,14 +1404,14 @@ sources:
 
   - id: group_ib
     name: Group-IB??????
-    type: rss
-    url: https://www.group-ib.com/blog/feed.xml
+    type: webpage
+    url: https://www.group-ib.com/blog/
     enabled: true
     weight: 0.75
     category: vendor_threat_research
     tier: B
     priority: P2
-    max_items: 20
+    max_items: 1
     fetch_full_article: true
     keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
 
@@ -1417,7 +1419,7 @@ sources:
     name: ????????
     type: webpage
     url: https://www.gov.il/en/Departments/incd
-    enabled: true
+    enabled: false
     weight: 0.9
     category: government
     tier: A
@@ -1455,7 +1457,7 @@ sources:
   - id: sygnia
     name: Sygnia????
     type: webpage
-    url: https://www.sygnia.co/resources
+    url: https://www.sygnia.co/threat-reports-and-advisories/
     enabled: true
     weight: 0.75
     category: vendor_threat_research
@@ -1521,7 +1523,7 @@ sources:
     name: NCC??/Fox-IT
     type: rss
     url: https://research.nccgroup.com/feed/
-    enabled: true
+    enabled: false
     weight: 0.9
     category: vendor_threat_research
     tier: A
@@ -1558,14 +1560,14 @@ sources:
 
   - id: sekoia
     name: Sekoia??????
-    type: rss
-    url: https://blog.sekoia.io/feed/
+    type: webpage
+    url: https://www.sekoia.com/blog
     enabled: true
     weight: 0.9
     category: vendor_threat_research
     tier: A
     priority: P1
-    max_items: 20
+    max_items: 1
     fetch_full_article: true
     keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
 
@@ -1573,7 +1575,7 @@ sources:
     name: HarfangLab????
     type: webpage
     url: https://harfanglab.io/insidethelab
-    enabled: true
+    enabled: false
     weight: 0.75
     category: vendor_threat_research
     tier: B
@@ -1599,7 +1601,7 @@ sources:
     name: ???????
     type: rss
     url: https://www.enisa.europa.eu/media/rss/news-feed-rss.xml
-    enabled: true
+    enabled: false
     weight: 0.9
     category: government
     tier: A
@@ -1612,7 +1614,7 @@ sources:
     name: ???????????
     type: rss
     url: https://www.bsi.bund.de/rss/SiteGlobals/Functions/RSSFeed/EN/RSSNewsfeed_BSI_EN.xml
-    enabled: true
+    enabled: false
     weight: 0.9
     category: government
     tier: A
@@ -1623,14 +1625,14 @@ sources:
 
   - id: ncsc_nl
     name: ??????????
-    type: webpage
-    url: https://www.ncsc.nl/english
+    type: rss
+    url: https://feeds.ncsc.nl/nieuws.rss
     enabled: true
     weight: 0.9
     category: government
     tier: A
     priority: P1
-    max_items: 1
+    max_items: 20
     fetch_full_article: true
     keywords: [APT, threat actor, nation-state, espionage, campaign, intrusion, malware, IOC, CVE, ????, ????, ????, ????, ??, ??]
 
@@ -1650,7 +1652,7 @@ sources:
   - id: cert_pl
     name: ??CERT
     type: rss
-    url: https://cert.pl/en/rss
+    url: https://cert.pl/en/rss.xml
     enabled: true
     weight: 0.75
     category: government
@@ -1689,7 +1691,7 @@ sources:
   - id: kisa_kr
     name: ????????
     type: webpage
-    url: https://www.kisa.or.kr/en
+    url: https://www.kisa.or.kr/EN
     enabled: true
     weight: 0.9
     category: government
@@ -1703,7 +1705,7 @@ sources:
     name: S2W????
     type: rss
     url: https://blog.s2w.inc/feed
-    enabled: true
+    enabled: false
     weight: 0.75
     category: vendor_threat_research
     tier: B
@@ -1742,7 +1744,7 @@ sources:
     name: ??????????
     type: rss
     url: https://www.cyber.gov.au/feed/
-    enabled: true
+    enabled: false
     weight: 0.9
     category: government
     tier: A
@@ -1897,7 +1899,7 @@ sources:
   - id: us_doj
     name: ???????????
     type: rss
-    url: https://www.justice.gov/feeds/opa/justice-news.xml
+    url: https://www.justice.gov/rss.xml
     enabled: true
     weight: 1.0
     category: legal_government
@@ -2002,7 +2004,7 @@ sources:
     name: ?????
     type: api_json
     url: https://archive.org/wayback/available
-    enabled: true
+    enabled: false
     weight: 0.55
     category: special
     tier: B
