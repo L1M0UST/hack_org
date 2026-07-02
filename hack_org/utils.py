@@ -37,7 +37,8 @@ def read_text_guess(path: Path) -> str:
 def repair_mojibake(value: str) -> str:
     """Repair common UTF-8 text that was previously decoded as Latin-1."""
 
-    if not any(marker in value for marker in ("Ã", "Â", "æ", "ç", "è", "é", "ï¼")):
+    markers = ("Ãƒ", "Ã‚", "Ã¦", "Ã§", "Ã¨", "Ã©", "Ã¯Â¼", "ä", "å", "æ", "ç", "è", "é", "ï¼")
+    if sum(value.count(marker) for marker in markers) < 2:
         return value
     for encoding in ("latin1", "cp1252"):
         try:

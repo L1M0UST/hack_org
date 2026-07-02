@@ -9,7 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Literal
 
-from .utils import utcnow, write_json
+from .utils import repair_mojibake, utcnow, write_json
 
 
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
@@ -70,6 +70,7 @@ class DailyLogger:
             "message": message,
             **fields,
         }
+        payload = _repair_payload(payload)
         self._append_jsonl(self.day_dir / f"{channel}.jsonl", payload)
         line = self._format_line(payload)
         self._append_text(self.day_dir / f"{channel}.log", line)
@@ -127,3 +128,17 @@ class DailyLogger:
             encoding = sys.stdout.encoding or "utf-8"
             safe = line.encode(encoding, errors="replace").decode(encoding, errors="replace")
             print(safe, flush=True)
+
+
+def _repair_payload(value: Any) -> Any:
+    """Repair mojibake in log messages and structured fields before writing."""
+
+    if isinstance(value, str):
+        return repair_mojibake(value)
+    if isinstance(value, list):
+        return [_repair_payload(item) for item in value]
+    if isinstance(value, tuple):
+        return [_repair_payload(item) for item in value]
+    if isinstance(value, dict):
+        return {str(_repair_payload(key)): _repair_payload(item) for key, item in value.items()}
+    return value

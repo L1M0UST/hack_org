@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -103,7 +102,9 @@ class DailyReportBuilder:
             "documents_inserted": sum(row["inserted_count"] for row in rows),
             "documents_duplicate": sum(row["duplicate_count"] for row in rows),
             "failed_run_count": sum(1 for row in rows if row["status"] == "failed"),
-            "failed_sources": sorted({row["source_id"] for row in rows if row["status"] == "failed" and row["source_id"]}),
+            "failed_sources": sorted(
+                {row["source_id"] for row in rows if row["status"] == "failed" and row["source_id"]}
+            ),
         }
         metrics["source_failure_streaks"] = self._source_failure_streaks(day)
         return metrics
@@ -261,9 +262,7 @@ class DailyReportBuilder:
                     {
                         "level": "warning",
                         "code": "source_failure_streak",
-                        "message": (
-                            f"{item['source_id']} 已连续失败 {item['consecutive_failed_days']} 天"
-                        ),
+                        "message": f"{item['source_id']} 已连续失败 {item['consecutive_failed_days']} 天",
                     }
                 )
         if pg["article_extract_failed"] >= self.thresholds.model_failure_warning:

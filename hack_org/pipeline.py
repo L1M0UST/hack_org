@@ -24,7 +24,7 @@ from .db_config import load_database_config
 from .daily_report import DailyReportBuilder
 from .discovery import discover_unknown_groups
 from .notification import load_notifier, render_report_message
-from .errors import classify_error, DatabaseConnectionFatalError
+from .errors import classify_error, DatabaseConnectionFatalError, ModelInputRejectedError
 
 
 @dataclass
@@ -165,7 +165,7 @@ class DailyPipeline:
                 "processing",
                 "INFO",
                 "unknown_groups_auto_promoted",
-                "æœªçŸ¥ç»„ç»‡è‡ªåŠ¨è½¬æ­£å®Œæˆ",
+                "未知组织自动转正完成",
                 candidates_found=summary.unknown_group_candidates,
                 evidence_written=summary.unknown_group_evidence,
                 promoted=summary.promoted_unknown_groups,
@@ -311,6 +311,22 @@ class DailyPipeline:
                                 matched_groups=len(payload["matched_groups"]),
                             )
                         except Exception as exc:
+                            if isinstance(exc, ModelInputRejectedError):
+                                payload = skipped_article_extract_payload(
+                                    pg_document_id,
+                                    "模型供应商拒绝该文档输入，已跳过以避免重复消耗 token。",
+                                )
+                                repository.finish_model_run(run_id, "skipped", payload, error_message=str(exc))
+                                self.logger.log(
+                                    "processing",
+                                    "WARNING",
+                                    "article_extract_skipped_by_provider",
+                                    "文章被模型供应商拒绝，已标记为跳过",
+                                    document_id=pg_document_id,
+                                    **classify_error(exc),
+                                    error=str(exc),
+                                )
+                                continue
                             error_info = classify_error(exc)
                             repository.finish_model_run(run_id, "failed", error_message=str(exc))
                             summary.article_failures += 1
@@ -512,3 +528,25 @@ class DailyPipeline:
         notifier = load_notifier(self.root / "config" / "notifications.yaml", self.root, env_path=self.root / ".env")
         title, body = render_report_message(report)
         notifier.send(title, body, report)
+
+
+def skipped_article_extract_payload(document_id: str, reason: str) -> dict[str, Any]:
+    """Build a schema-compatible terminal result for provider-rejected documents."""
+
+    return {
+        "schema_version": "1.0",
+        "task_type": "article_extract",
+        "document_id": document_id,
+        "processing_result": {
+            "is_relevant": False,
+            "document_summary": "",
+            "language": None,
+            "discard_reason": reason,
+        },
+        "matched_groups": [],
+        "basic_profile_updates": [],
+        "organization_structure_updates": {"relations": [], "members": []},
+        "activity_events": [],
+        "apt_table_candidates": [],
+        "discarded_claims": [{"claim": "provider_input_rejected", "reason": reason}],
+    }

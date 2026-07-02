@@ -15,7 +15,7 @@ import yaml
 from jsonschema import ValidationError
 
 from .llm_protocol import load_schema, validate_payload
-from .errors import ModelAuthError, ModelConnectionError, ModelResponseFormatError
+from .errors import ModelAuthError, ModelConnectionError, ModelInputRejectedError, ModelResponseFormatError
 from .env_utils import load_env_file
 
 
@@ -161,6 +161,8 @@ class OpenAICompatibleClient:
         except httpx.HTTPStatusError as exc:
             if exc.response.status_code in {401, 403}:
                 raise ModelAuthError(_http_error_message(exc)) from exc
+            if _is_input_rejected_error(exc):
+                raise ModelInputRejectedError(_http_error_message(exc)) from exc
             if exc.response.status_code == 400 and "response_format" in payload:
                 fallback_payload = dict(payload)
                 fallback_payload.pop("response_format", None)
@@ -179,6 +181,8 @@ class OpenAICompatibleClient:
                 except httpx.HTTPStatusError as fallback_exc:
                     if fallback_exc.response.status_code in {401, 403}:
                         raise ModelAuthError(_http_error_message(fallback_exc)) from fallback_exc
+                    if _is_input_rejected_error(fallback_exc):
+                        raise ModelInputRejectedError(_http_error_message(fallback_exc)) from fallback_exc
                     raise ModelConnectionError(_http_error_message(fallback_exc)) from fallback_exc
                 except httpx.RequestError as fallback_exc:
                     raise ModelConnectionError(str(fallback_exc)) from fallback_exc
@@ -296,3 +300,15 @@ def _http_error_message(exc: httpx.HTTPStatusError) -> str:
 
     body = exc.response.text[:2000]
     return f"{exc}; response_body={body}"
+
+
+def _is_input_rejected_error(exc: httpx.HTTPStatusError) -> bool:
+    """Return whether the provider rejected only this specific prompt input."""
+
+    body = exc.response.text.casefold()
+    return exc.response.status_code == 422 and (
+        "new_sensitive" in body
+        or "input sensitive" in body
+        or "input_sensitive" in body
+        or "content filter" in body
+    )

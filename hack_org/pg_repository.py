@@ -294,8 +294,8 @@ class PostgresRepository:
                 raise ValueError("document_id is required for document-scoped model runs")
             return bool(cur.fetchone()[0])
 
-    def successful_model_run_document_ids(self, run_type: str, document_ids: list[str]) -> set[str]:
-        """Return document IDs that already have a successful model run."""
+    def completed_model_run_document_ids(self, run_type: str, document_ids: list[str]) -> set[str]:
+        """Return document IDs that already reached a terminal model-run status."""
 
         if not document_ids:
             return set()
@@ -305,12 +305,17 @@ class PostgresRepository:
                 SELECT DISTINCT document_id
                 FROM model_runs
                 WHERE run_type = %s
-                  AND status = 'success'
+                  AND status IN ('success', 'skipped')
                   AND document_id = ANY(%s)
                 """,
                 (run_type, document_ids),
             )
             return {str(row[0]) for row in cur.fetchall() if row[0]}
+
+    def successful_model_run_document_ids(self, run_type: str, document_ids: list[str]) -> set[str]:
+        """Return document IDs that already have a successful or skipped model run."""
+
+        return self.completed_model_run_document_ids(run_type, document_ids)
 
     def document_backlog_summary(self) -> dict[str, Any]:
         """Return document processing backlog grouped by source."""
@@ -324,7 +329,7 @@ class PostgresRepository:
                   SELECT 1 FROM model_runs mr
                   WHERE mr.document_id = d.id
                     AND mr.run_type = 'article_extract'
-                    AND mr.status = 'success'
+                    AND mr.status IN ('success', 'skipped')
                 )
                 """
             )
@@ -339,7 +344,7 @@ class PostgresRepository:
                   SELECT 1 FROM model_runs mr
                   WHERE mr.document_id = d.id
                     AND mr.run_type = 'article_extract'
-                    AND mr.status = 'success'
+                    AND mr.status IN ('success', 'skipped')
                 )
                 GROUP BY d.source_id
                 ORDER BY pending_count DESC, d.source_id

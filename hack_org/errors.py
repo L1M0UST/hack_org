@@ -23,6 +23,10 @@ class ModelResponseFormatError(RuntimeError):
     """The model answered but did not satisfy required JSON/schema format."""
 
 
+class ModelInputRejectedError(RuntimeError):
+    """The model provider rejected this specific input and retrying it is wasteful."""
+
+
 class DatabaseConnectionFatalError(PipelineFatalError):
     """PostgreSQL could not be reached."""
 
@@ -40,6 +44,8 @@ def classify_error(exc: BaseException) -> dict[str, str]:
         return {"category": "database_connection", "severity": "fatal"}
     if isinstance(exc, ModelResponseFormatError):
         return {"category": "model_format", "severity": "warning"}
+    if isinstance(exc, ModelInputRejectedError):
+        return {"category": "model_input_rejected", "severity": "warning"}
     name = exc.__class__.__name__.casefold()
     text = str(exc).casefold()
     if "connection" in name or "timeout" in name or "connection" in text:
